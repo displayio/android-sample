@@ -40,7 +40,6 @@ public class SharedPreferencesManager {
             JSONObject placementsJson = new JSONObject(placementsString);
             placementsJson.put(placement.getId(), placement.getData());
             placementsString = placementsJson.toString();
-            Log.e("addNewPlacement", placement.getData().toString());
         } catch (JSONException e) {
             Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
         }
@@ -55,7 +54,6 @@ public class SharedPreferencesManager {
             JSONObject placementsJson = new JSONObject(placementsString);
             placementsJson.remove(placement.getId());
             placementsString = placementsJson.toString();
-            Log.e("removePlacement", placement.getData().toString());
         } catch (JSONException e) {
             Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
         }

@@ -2,12 +2,10 @@ package io.display.displayiosampleapp.activities;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -19,6 +17,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
 
+import io.display.displayiosampleapp.AbstractActivity;
 import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.adapter.PlacementsAdapter;
 import io.display.displayiosampleapp.listeners.OnRecyclerViewItemClickListener;
@@ -28,13 +27,9 @@ import io.display.sdk.Controller;
 import io.display.sdk.EventListener;
 import io.display.sdk.Placement;
 
-public class AddPlacementActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener {
+public class AddPlacementActivity extends AbstractActivity implements OnRecyclerViewItemClickListener {
 
-    private ImageView backImageView;
-    private TextView sdkVersionTextView;
-    private TextView getPlacementsTextView;
     private EditText appIdEditText;
-    private RecyclerView addPlacementsRecyclerView;
     private ProgressBar addPlacementsProgressBar;
     private PlacementsAdapter addPlacementsAdapter;
     private ArrayList<Placement> placements;
@@ -86,7 +81,7 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
     }
 
     private void setupAddPlacementsRecyclerView() {
-        addPlacementsRecyclerView = findViewById(R.id.recycler_view_add_placements);
+        RecyclerView addPlacementsRecyclerView = findViewById(R.id.recycler_view_add_placements);
 
         addPlacementsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         addPlacementsAdapter = new PlacementsAdapter(this, false);
@@ -100,12 +95,12 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
     }
 
     private void setupBackImageView() {
-        backImageView = findViewById(R.id.image_view_add_placement_back);
+        ImageView backImageView = findViewById(R.id.image_view_add_placement_back);
         backImageView.setOnClickListener(view -> onBackPressed());
     }
 
     private void setupGetPlacementsTextView() {
-        getPlacementsTextView = findViewById(R.id.text_view_get_placement);
+        TextView getPlacementsTextView = findViewById(R.id.text_view_get_placement);
         getPlacementsTextView.setOnClickListener(view -> {
             refreshController(this, appIdEditText.getText().toString(), false);
             addPlacementsAdapter.setPlacements(new ArrayList<>());
@@ -120,21 +115,8 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
     }
 
     private void setupSdkVersion() {
-        sdkVersionTextView = findViewById(R.id.text_view_add_placement_sdk_version);
+        TextView sdkVersionTextView = findViewById(R.id.text_view_add_placement_sdk_version);
         sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), BuildConfig.VERSION_NAME));
-    }
-
-    private void showNotification(String message, int length, boolean error) {
-        Toast toast = Toast.makeText(this, message, length);
-        toast.getView().setBackgroundResource(error ? R.drawable.bg_red_toast : R.drawable.bg_green_toast);
-        toast.show();
-    }
-
-    private void hideKeyBoard() {
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null && getCurrentFocus() != null) {
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }
     }
 
     private void refreshController(Context context, String appId, boolean preloadAd) {
@@ -151,13 +133,6 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        adsController.onDestroy();
-        adsController.clean();
-        super.onDestroy();
     }
 
     @Override

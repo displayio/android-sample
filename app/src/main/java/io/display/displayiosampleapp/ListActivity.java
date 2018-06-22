@@ -9,7 +9,6 @@ import io.display.displayiosampleapp.util.StaticValues;
 
 public class ListActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
     private String placementId;
     private boolean isNativeAdd;
 
@@ -25,9 +24,8 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        recyclerView = findViewById(R.id.recycler_view_list);
-
+        RecyclerView recyclerView = findViewById(R.id.recycler_view_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(new ListAdapter(15, new String[]{"6", "12"}, placementId, isNativeAdd));
+        recyclerView.setAdapter(new ListAdapter(15, new String[]{"5", "10"}, placementId, isNativeAdd));
     }
 }

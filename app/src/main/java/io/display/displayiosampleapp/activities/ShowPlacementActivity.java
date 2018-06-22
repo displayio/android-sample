@@ -2,7 +2,6 @@ package io.display.displayiosampleapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -14,6 +13,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Method;
 
+import io.display.displayiosampleapp.AbstractActivity;
 import io.display.displayiosampleapp.ListActivity;
 import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.util.StaticValues;
@@ -22,19 +22,15 @@ import io.display.sdk.Controller;
 import io.display.sdk.EventListener;
 import io.display.sdk.Placement;
 
-public class ShowPlacementActivity extends AppCompatActivity {
+public class ShowPlacementActivity extends AbstractActivity {
 
-    private ImageView backImageView;
-    private TextView placementNameTextView;
-    private TextView placementTypeTextView;
-    private TextView loadAdTextView;
     private TextView showAdTextView;
     private FrameLayout showAdTextViewContainer;
-    private TextView sdkVersionTextView;
 
     private Controller adsController;
     private Placement placement;
     private boolean placementIsSet;
+    private boolean adIsLoaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,22 +61,11 @@ public class ShowPlacementActivity extends AppCompatActivity {
         adsController.setEventListener(new EventListener() {
 
             @Override
-            public void onInit() {
-                System.out.println(adsController.getAppId());
-                System.out.println(adsController.placements);
-            }
-
-            @Override
             public void onAdReady(String placementId) {
                 Log.i(getClass().getSimpleName(), "Ad is ready for placement " + placementId);
-                showNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_LONG, false);
+                showNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
                 showAdTextViewContainer.setBackgroundResource(R.color.colorPrimaryDark);
                 showAdTextView.setEnabled(true);
-            }
-
-            @Override
-            public void onNoAds(String placementId) {
-                showNotification(getString(R.string.notification_error_no_fill), Toast.LENGTH_LONG, true);
             }
         });
     }
@@ -90,21 +75,28 @@ public class ShowPlacementActivity extends AppCompatActivity {
             return;
         }
 
-        placementNameTextView = findViewById(R.id.text_view_show_placement_name);
+        TextView placementNameTextView = findViewById(R.id.text_view_show_placement_name);
         placementNameTextView.setText(placement.getName());
 
-        placementTypeTextView = findViewById(R.id.text_view_show_placement_type);
+        TextView placementTypeTextView = findViewById(R.id.text_view_show_placement_type);
         placementTypeTextView.setText(String.format(getString(R.string.placeholder_placement_name), placement.getName()));
     }
 
     private void setupButtons() {
-        loadAdTextView = findViewById(R.id.text_view_load_ad);
+        TextView loadAdTextView = findViewById(R.id.text_view_load_ad);
         loadAdTextView.setOnClickListener(view -> {
             try {
                 if (placement.hasAd()) {
-                    Method loadAd = placement.getClass().getDeclaredMethod("loadAd");
-                    loadAd.setAccessible(true);
-                    loadAd.invoke(placement);
+                    if (!adIsLoaded) {
+                        Method loadAd = placement.getClass().getDeclaredMethod("loadAd");
+                        loadAd.setAccessible(true);
+                        loadAd.invoke(placement);
+                        adIsLoaded = true;
+                    } else {
+                        showNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
+                    }
+                } else {
+                    showNotification(getString(R.string.notification_error_no_fill), Toast.LENGTH_SHORT, true);
                 }
             } catch (Throwable e) {
                 Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
@@ -118,19 +110,13 @@ public class ShowPlacementActivity extends AppCompatActivity {
     }
 
     private void setupBackImageView() {
-        backImageView = findViewById(R.id.image_view_show_placement_back);
+        ImageView backImageView = findViewById(R.id.image_view_show_placement_back);
         backImageView.setOnClickListener(view -> onBackPressed());
     }
 
     private void setupSdkVersion() {
-        sdkVersionTextView = findViewById(R.id.text_view_show_placement_sdk_version);
+        TextView sdkVersionTextView = findViewById(R.id.text_view_show_placement_sdk_version);
         sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), BuildConfig.VERSION_NAME));
-    }
-
-    private void showNotification(String message, int length, boolean error) {
-        Toast toast = Toast.makeText(this, message, length);
-        toast.getView().setBackgroundResource(error ? R.drawable.bg_red_toast : R.drawable.bg_green_toast);
-        toast.show();
     }
 
     public void showAd() {
@@ -144,27 +130,25 @@ public class ShowPlacementActivity extends AppCompatActivity {
         }
 
         try {
-            if (((JSONObject) placement.getData().getJSONArray("ads").get(0)).getJSONObject("ad").getString("type").equals(Controller.AD_INFEED)) {
-                startActivity(new Intent(this, ListActivity.class)
-                        .putExtra(StaticValues.PLACEMENT_ID, placement.getId()));
-            } else if (((JSONObject) placement.getData().getJSONArray("ads").get(0)).getJSONObject("ad").getString("type").equals(Controller.AD_NATIVE)) {
-                startActivity(new Intent(this, ListActivity.class)
-                        .putExtra(StaticValues.PLACEMENT_ID, placement.getId())
-                        .putExtra(StaticValues.IS_NATIVE_ADD, true));
-            } else {
-                JSONObject adParams = new JSONObject();
-                adParams.put("rewardName", "credit")
-                        .put("rewardAmount", 15);
-                adsController.showAd(this, placement.getId(), adParams);
+            switch (((JSONObject) placement.getData().getJSONArray("ads").get(0)).getJSONObject("ad").getString("type")) {
+                case Controller.AD_INFEED:
+                    startActivity(new Intent(this, ListActivity.class)
+                            .putExtra(StaticValues.PLACEMENT_ID, placement.getId()));
+                    break;
+                case Controller.AD_NATIVE:
+                    startActivity(new Intent(this, ListActivity.class)
+                            .putExtra(StaticValues.PLACEMENT_ID, placement.getId())
+                            .putExtra(StaticValues.IS_NATIVE_ADD, true));
+                    break;
+                default:
+                    JSONObject adParams = new JSONObject();
+                    adParams.put("rewardName", "credit")
+                            .put("rewardAmount", 15);
+                    adsController.showAd(this, placement.getId(), adParams);
+                    break;
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        adsController.onDestroy();
-        super.onDestroy();
     }
 }
