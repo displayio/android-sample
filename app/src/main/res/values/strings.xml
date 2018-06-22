@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">display.io Sample App</string>
+    <string name="on_back_pressed">Press back again to exit</string>
+
+    <!-- Buttons texts -->
+    <string name="load_ad">Load Ad</string>
+    <string name="show_ad">Show Ad</string>
+    <string name="get_placements">Get Placements</string>
+    <string name="add_new_placement">Add new placement</string>
+
+    <!-- Placements texts -->
+    <string name="predefined_placements_header_text">display.io Pre-Defined placements</string>
+    <string name="my_placements_header_text">My placements</string>
+    <string name="placeholder_placement_label_display">display.io %s</string>
+    <string name="placeholder_placement_label_my">My %s</string>
+    <string name="placeholder_placement_name">[%s]</string>
+    <string name="add_a_new_placement">Add a new placement</string>
+    <string name="placeholder_sdk_version">SDK v%s</string>
+    <string name="app_id">App ID</string>
+
+    <!-- Success notifications texts -->
+    <string name="notification_success_add_was_loaded">Ad was loaded</string>
+    <string name="notification_success_placement_was_loaded">Placement was added</string>
+
+    <!-- Error notifications texts -->
+    <string name="notification_error_app_is_inactive">App is inactive</string>
+    <string name="notification_error_placements_is_inactive">Placement is inactive</string>
+    <string name="notification_error_no_app_for_the_id">No app for the ID</string>
+    <string name="notification_error_no_fill">No fill</string>
+</resources>
