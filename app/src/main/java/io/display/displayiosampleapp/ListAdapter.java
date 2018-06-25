@@ -14,6 +14,7 @@ import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,16 +29,18 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private String placementId;
     private Context context;
-    private List<String> adPosition;
-    private int[] imagesIds;
+    private List<Integer> imagesIds;
     private SparseArray<InfeedAdContainer> loadedAds;
     private boolean displayed;
     private boolean isNativeAd;
 
-    public ListAdapter(int[] imagesIds, String[] adPosition, String placementId, boolean isNative) {
+    public ListAdapter(List<Integer> imagesIds, int[] adPosition, String placementId, boolean isNative) {
         this.placementId = placementId;
-        this.adPosition = Arrays.asList(adPosition);
-        this.imagesIds = imagesIds;
+        this.imagesIds = new ArrayList<>();
+        this.imagesIds.addAll(imagesIds);
+        for (int position : adPosition) {
+            this.imagesIds.add(position, null);
+        }
         isNativeAd = isNative;
         displayed = false;
     }
@@ -61,7 +64,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if (adPosition.contains(String.valueOf(position))) {
+        if (imagesIds.get(position) == null) {
             return ADD_VIEW_TYPE;
         } else {
             return DEFAULT_VIEW_TYPE;
@@ -86,7 +89,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 infeedAdContainer.bindTo((FrameLayout) ((AdViewHolder) holder).itemView);
             }
         } else {
-            ((ViewHolder) holder).itemImageView.setImageResource(imagesIds[holder.getAdapterPosition()]);
+            ((ViewHolder) holder).itemImageView.setImageResource(imagesIds.get(holder.getAdapterPosition()));
         }
     }
 
@@ -97,7 +100,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return imagesIds.length;
+        return imagesIds.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
