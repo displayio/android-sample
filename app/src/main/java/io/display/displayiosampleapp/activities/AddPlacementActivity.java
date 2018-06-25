@@ -22,6 +22,7 @@ import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.adapter.PlacementsAdapter;
 import io.display.displayiosampleapp.listeners.OnRecyclerViewItemClickListener;
 import io.display.displayiosampleapp.util.SharedPreferencesManager;
+import io.display.displayiosampleapp.util.StaticValues;
 import io.display.sdk.BuildConfig;
 import io.display.sdk.Controller;
 import io.display.sdk.EventListener;
@@ -139,7 +140,6 @@ public class AddPlacementActivity extends AbstractActivity implements OnRecycler
     public void onItemClick(int position, int section) {
         SharedPreferencesManager.getInstance(this.getApplicationContext()).addNewPlacement(placements.get(position));
         showNotification(getString(R.string.notification_success_placement_was_loaded), Toast.LENGTH_LONG, false);
-        refreshController(this, null, false);
         finish();
     }
 
