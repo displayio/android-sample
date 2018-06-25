@@ -29,15 +29,15 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private String placementId;
     private Context context;
     private List<String> adPosition;
+    private int[] imagesIds;
     private SparseArray<InfeedAdContainer> loadedAds;
     private boolean displayed;
     private boolean isNativeAd;
-    private int count;
 
-    public ListAdapter(int count, String[] position, String placementId, boolean isNative) {
-        this.count = count;
+    public ListAdapter(int[] imagesIds, String[] adPosition, String placementId, boolean isNative) {
         this.placementId = placementId;
-        this.adPosition = Arrays.asList(position);
+        this.adPosition = Arrays.asList(adPosition);
+        this.imagesIds = imagesIds;
         isNativeAd = isNative;
         displayed = false;
     }
@@ -51,7 +51,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (isNativeAd) {
                     return new NativeAdViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_nativead, parent, false));
                 } else {
-                    return new AdHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_ad, parent, false));
+                    return new AdViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_ad, parent, false));
                 }
 
             default:
@@ -83,8 +83,10 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 nativeAddViewHolder.ctaButton.setOnClickListener(view -> nativeAd.sendClick(context));
             } else {
                 InfeedAdContainer infeedAdContainer = Controller.getInstance().getInfeedAdContainer(context, this.placementId);
-                infeedAdContainer.bindTo((FrameLayout) ((AdHolder) holder).itemView);
+                infeedAdContainer.bindTo((FrameLayout) ((AdViewHolder) holder).itemView);
             }
+        } else {
+            ((ViewHolder) holder).itemImageView.setImageResource(imagesIds[holder.getAdapterPosition()]);
         }
     }
 
@@ -95,13 +97,25 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return count;
+        return imagesIds.length;
     }
 
-    class AdHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
+
+        ImageView itemImageView;
+
+        ViewHolder(View itemView) {
+            super(itemView);
+
+            itemImageView = itemView.findViewById(R.id.image_view_item);
+        }
+    }
+
+    class AdViewHolder extends RecyclerView.ViewHolder {
+
         RelativeLayout imageFrame;
 
-        AdHolder(View itemView) {
+        AdViewHolder(View itemView) {
             super(itemView);
 
             imageFrame = new RelativeLayout(itemView.getContext());
@@ -111,13 +125,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-        ViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
-
     class NativeAdViewHolder extends RecyclerView.ViewHolder {
+
         ImageView appIcon;
         TextView appName;
         RatingBar appRatingBar;

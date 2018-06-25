@@ -176,7 +176,7 @@ public class MainActivity extends AbstractActivity implements OnRecyclerViewItem
     public void onItemButtonClicked(int position) {
         AlertDialog alert = new AlertDialog.Builder(this).create();
         alert.setTitle("Remove placement");
-        alert.setMessage("Are you sure you want to remove placement " + String.format(getString(R.string.placeholder_placement_label_my), userDefinedPlacements.get(position).getName()) + "?");
+        alert.setMessage("Are you sure you want to remove '" + String.format(getString(R.string.placeholder_placement_label_my), userDefinedPlacements.get(position).getName()) + "' placement?");
         alert.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", (dialog, which) -> removePlacement(position));
         alert.setButton(DialogInterface.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
         alert.show();

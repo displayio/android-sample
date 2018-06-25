@@ -3,8 +3,10 @@ package io.display.displayiosampleapp.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,10 +28,10 @@ public class ShowPlacementActivity extends AbstractActivity {
 
     private TextView showAdTextView;
     private FrameLayout showAdTextViewContainer;
+    private ProgressBar progressBar;
 
     private Controller adsController;
     private Placement placement;
-    private boolean placementIsSet;
     private boolean adIsLoaded;
 
     @Override
@@ -39,7 +41,7 @@ public class ShowPlacementActivity extends AbstractActivity {
 
         setupAdsController();
         setupButtons();
-
+        setupProgressBar();
         setupBackImageView();
         setupSdkVersion();
 
@@ -51,9 +53,6 @@ public class ShowPlacementActivity extends AbstractActivity {
 
     private void setupPlacement(String placementId) {
         placement = Controller.getInstance().placements.get(placementId);
-        if (placement != null) {
-            placementIsSet = true;
-        }
     }
 
     private void setupAdsController() {
@@ -66,12 +65,13 @@ public class ShowPlacementActivity extends AbstractActivity {
                 showNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
                 showAdTextViewContainer.setBackgroundResource(R.color.colorPrimaryDark);
                 showAdTextView.setEnabled(true);
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
 
     private void setupTextViews() {
-        if (!placementIsSet) {
+        if (placement == null) {
             return;
         }
 
@@ -88,6 +88,7 @@ public class ShowPlacementActivity extends AbstractActivity {
             try {
                 if (placement.hasAd()) {
                     if (!adIsLoaded) {
+                        progressBar.setVisibility(View.VISIBLE);
                         Method loadAd = placement.getClass().getDeclaredMethod("loadAd");
                         loadAd.setAccessible(true);
                         loadAd.invoke(placement);
@@ -95,6 +96,8 @@ public class ShowPlacementActivity extends AbstractActivity {
                     } else {
                         showNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
                     }
+                } else if (!placement.isOperative()) {
+                    showNotification(getString(R.string.notification_error_placements_is_inactive), Toast.LENGTH_SHORT, true);
                 } else {
                     showNotification(getString(R.string.notification_error_no_fill), Toast.LENGTH_SHORT, true);
                 }
@@ -105,7 +108,7 @@ public class ShowPlacementActivity extends AbstractActivity {
 
         showAdTextView = findViewById(R.id.text_view_show_ad);
         showAdTextViewContainer = findViewById(R.id.frame_layout_show_add);
-        showAdTextView.setOnClickListener(view -> showAd());
+        showAdTextView.setOnClickListener(view -> showAd(placement.getId()));
         showAdTextView.setEnabled(false);
     }
 
@@ -114,41 +117,12 @@ public class ShowPlacementActivity extends AbstractActivity {
         backImageView.setOnClickListener(view -> onBackPressed());
     }
 
+    private void setupProgressBar() {
+        progressBar = findViewById(R.id.progress_bar_show_placement);
+    }
+
     private void setupSdkVersion() {
         TextView sdkVersionTextView = findViewById(R.id.text_view_show_placement_sdk_version);
         sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), BuildConfig.VERSION_NAME));
-    }
-
-    public void showAd() {
-        if (!placementIsSet) {
-            System.out.println("Placement is null");
-            return;
-        }
-        if (!placement.hasAd()) {
-            System.out.println("Placement has no ad");
-            return;
-        }
-
-        try {
-            switch (((JSONObject) placement.getData().getJSONArray("ads").get(0)).getJSONObject("ad").getString("type")) {
-                case Controller.AD_INFEED:
-                    startActivity(new Intent(this, ListActivity.class)
-                            .putExtra(StaticValues.PLACEMENT_ID, placement.getId()));
-                    break;
-                case Controller.AD_NATIVE:
-                    startActivity(new Intent(this, ListActivity.class)
-                            .putExtra(StaticValues.PLACEMENT_ID, placement.getId())
-                            .putExtra(StaticValues.IS_NATIVE_ADD, true));
-                    break;
-                default:
-                    JSONObject adParams = new JSONObject();
-                    adParams.put("rewardName", "credit")
-                            .put("rewardAmount", 15);
-                    adsController.showAd(this, placement.getId(), adParams);
-                    break;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 }

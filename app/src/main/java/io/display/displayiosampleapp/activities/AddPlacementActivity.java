@@ -12,6 +12,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -22,7 +25,6 @@ import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.adapter.PlacementsAdapter;
 import io.display.displayiosampleapp.listeners.OnRecyclerViewItemClickListener;
 import io.display.displayiosampleapp.util.SharedPreferencesManager;
-import io.display.displayiosampleapp.util.StaticValues;
 import io.display.sdk.BuildConfig;
 import io.display.sdk.Controller;
 import io.display.sdk.EventListener;
@@ -76,7 +78,19 @@ public class AddPlacementActivity extends AbstractActivity implements OnRecycler
             @Override
             public void onInitError(String msg) {
                 addPlacementsProgressBar.setVisibility(View.GONE);
-
+                try {
+                    String error = new JSONObject(msg.substring(msg.indexOf("{"))).getString("errMsg");
+                    switch (error) {
+                        case "app inactive":
+                            showNotification(getString(R.string.notification_error_app_is_inactive), Toast.LENGTH_SHORT, true);
+                            break;
+                        default:
+                            showNotification(getString(R.string.notification_error_no_app_for_the_id), Toast.LENGTH_SHORT, true);
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

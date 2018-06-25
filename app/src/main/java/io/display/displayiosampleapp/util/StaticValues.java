@@ -133,7 +133,7 @@ public class StaticValues {
             "    ]\n" +
             "  },\n" +
             "  \"3011-predefined\": {\n" +
-            "    \"name\": \"Intersittial Tag\",\n" +
+            "    \"name\": \"Interstitial Tag\",\n" +
             "    \"status\": \"enabled\",\n" +
             "    \"ads\": [\n" +
             "      {\n" +
