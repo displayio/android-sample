@@ -1,6 +1,5 @@
 package io.display.displayiosampleapp.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,13 +9,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.lang.reflect.Method;
 
 import io.display.displayiosampleapp.AbstractActivity;
-import io.display.displayiosampleapp.ListActivity;
 import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.util.StaticValues;
 import io.display.sdk.BuildConfig;

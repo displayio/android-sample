@@ -44,6 +44,15 @@ public class MainActivity extends AbstractActivity implements OnRecyclerViewItem
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setupSdkVersion();
+        setupPlacementsList();
+        setupAddPlacementTextView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         Controller controller = Controller.getInstance();
         try {
             Method method = controller.getClass().getDeclaredMethod("f");
@@ -52,16 +61,6 @@ public class MainActivity extends AbstractActivity implements OnRecyclerViewItem
         } catch (Throwable e) {
             e.printStackTrace();
         }
-
-        setupSdkVersion();
-
-        setupPlacementsList();
-        setupAddPlacementTextView();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         getPlacements(false);
         predefinedPlacementsAdapter.setPlacements(predefinedPlacements);
