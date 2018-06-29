@@ -1,4 +1,4 @@
-package io.display.displayiosampleapp.adapter;
+package io.display.displayiosampleapp.base.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.display.displayiosampleapp.R;
-import io.display.displayiosampleapp.listeners.OnRecyclerViewItemClickListener;
+import io.display.displayiosampleapp.base.listeners.OnRecyclerViewItemClickListener;
 import io.display.sdk.Placement;
 
 public class PlacementsAdapter extends RecyclerView.Adapter<PlacementsAdapter.PlacementsViewHolder> {

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBody"
-    tools:context=".activities.ShowPlacementActivity">
+    tools:context=".base.activities.ShowPlacementActivity">
 
     <RelativeLayout
         android:id="@+id/relative_layout_show_placement_toolbar"

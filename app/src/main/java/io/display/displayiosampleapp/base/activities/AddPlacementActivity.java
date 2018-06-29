@@ -1,4 +1,4 @@
-package io.display.displayiosampleapp.activities;
+package io.display.displayiosampleapp.base.activities;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -22,9 +22,9 @@ import java.util.Map;
 
 import io.display.displayiosampleapp.AbstractActivity;
 import io.display.displayiosampleapp.R;
-import io.display.displayiosampleapp.adapter.PlacementsAdapter;
-import io.display.displayiosampleapp.listeners.OnRecyclerViewItemClickListener;
-import io.display.displayiosampleapp.util.SharedPreferencesManager;
+import io.display.displayiosampleapp.base.adapter.PlacementsAdapter;
+import io.display.displayiosampleapp.base.listeners.OnRecyclerViewItemClickListener;
+import io.display.displayiosampleapp.base.util.SharedPreferencesManager;
 import io.display.sdk.BuildConfig;
 import io.display.sdk.Controller;
 import io.display.sdk.EventListener;
@@ -82,10 +82,10 @@ public class AddPlacementActivity extends AbstractActivity implements OnRecycler
                     String error = new JSONObject(msg.substring(msg.indexOf("{"))).getString("errMsg");
                     switch (error) {
                         case "app inactive":
-                            showNotification(getString(R.string.notification_error_app_is_inactive), Toast.LENGTH_SHORT, true);
+                            showToastNotification(getString(R.string.notification_error_app_is_inactive), Toast.LENGTH_SHORT, true);
                             break;
                         default:
-                            showNotification(getString(R.string.notification_error_no_app_for_the_id), Toast.LENGTH_SHORT, true);
+                            showToastNotification(getString(R.string.notification_error_no_app_for_the_id), Toast.LENGTH_SHORT, true);
                             break;
                     }
                 } catch (JSONException e) {
@@ -153,7 +153,7 @@ public class AddPlacementActivity extends AbstractActivity implements OnRecycler
     @Override
     public void onItemClick(int position, int section) {
         SharedPreferencesManager.getInstance(this.getApplicationContext()).addNewPlacement(placements.get(position));
-        showNotification(getString(R.string.notification_success_placement_was_loaded), Toast.LENGTH_LONG, false);
+        showToastNotification(getString(R.string.notification_success_placement_was_loaded), Toast.LENGTH_LONG, false);
         finish();
     }
 

@@ -19,6 +19,7 @@
     <string name="app_id">App ID</string>
 
     <!-- Success notifications texts -->
+    <string name="notification_add_is_loading">Ad is loading</string>
     <string name="notification_success_add_was_loaded">Ad was loaded</string>
     <string name="notification_success_placement_was_loaded">Placement was added</string>
 

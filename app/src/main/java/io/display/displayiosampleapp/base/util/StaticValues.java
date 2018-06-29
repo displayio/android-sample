@@ -1,11 +1,10 @@
-package io.display.displayiosampleapp.util;
+package io.display.displayiosampleapp.base.util;
 
 public class StaticValues {
 
     public static final String PLACEMENT_ID = "placement_id";
     public static final String IS_NATIVE_ADD = "is_native_add";
 
-    public static final String APP_ID = "xyz";
     public static final String PREDEFINED_PLACEMENTS = "{\n" +
             "  \"1348-predefined\": {\n" +
             "    \"name\": \"Inter Vid House\",\n" +

@@ -1,4 +1,4 @@
-package io.display.displayiosampleapp.activities;
+package io.display.displayiosampleapp.base.activities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -20,10 +20,10 @@ import java.util.List;
 
 import io.display.displayiosampleapp.AbstractActivity;
 import io.display.displayiosampleapp.R;
-import io.display.displayiosampleapp.adapter.PlacementsAdapter;
-import io.display.displayiosampleapp.listeners.OnRecyclerViewItemClickListener;
-import io.display.displayiosampleapp.util.SharedPreferencesManager;
-import io.display.displayiosampleapp.util.StaticValues;
+import io.display.displayiosampleapp.base.adapter.PlacementsAdapter;
+import io.display.displayiosampleapp.base.listeners.OnRecyclerViewItemClickListener;
+import io.display.displayiosampleapp.base.util.SharedPreferencesManager;
+import io.display.displayiosampleapp.base.util.StaticValues;
 import io.display.sdk.BuildConfig;
 import io.display.sdk.Controller;
 import io.display.sdk.DioSdkException;

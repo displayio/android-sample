@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBody"
-    tools:context=".activities.MainActivity">
+    tools:context=".base.activities.MainActivity">
 
     <RelativeLayout
         android:id="@+id/relative_layout_main_toolbar"
@@ -69,10 +69,10 @@
                 android:id="@+id/text_view_predefined_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
                 android:background="@color/colorAccent"
                 android:gravity="center_vertical"
                 android:padding="8dp"
-                android:layout_margin="8dp"
                 android:text="@string/predefined_placements_header_text"
                 android:textColor="@color/colorBlack"
                 android:textSize="16sp"
@@ -89,11 +89,11 @@
                 android:id="@+id/text_view_user_defined_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
                 android:layout_marginTop="48dp"
                 android:background="@color/colorAccent"
                 android:gravity="center_vertical"
                 android:padding="8dp"
-                android:layout_margin="8dp"
                 android:text="@string/my_placements_header_text"
                 android:textColor="@color/colorBlack"
                 android:textSize="16sp"

@@ -1,4 +1,4 @@
-package io.display.displayiosampleapp.activities;
+package io.display.displayiosampleapp.base.activities;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
 
 import io.display.displayiosampleapp.AbstractActivity;
 import io.display.displayiosampleapp.R;
-import io.display.displayiosampleapp.util.StaticValues;
+import io.display.displayiosampleapp.base.util.StaticValues;
 import io.display.sdk.BuildConfig;
 import io.display.sdk.Controller;
 import io.display.sdk.EventListener;
@@ -25,9 +25,9 @@ public class ShowPlacementActivity extends AbstractActivity {
     private FrameLayout showAdTextViewContainer;
     private ProgressBar progressBar;
 
-    private Controller adsController;
     private Placement placement;
     private boolean adIsLoaded;
+    private boolean adIsLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,16 +51,16 @@ public class ShowPlacementActivity extends AbstractActivity {
     }
 
     private void setupAdsController() {
-        adsController = Controller.getInstance();
-        adsController.setEventListener(new EventListener() {
+        Controller.getInstance().setEventListener(new EventListener() {
 
             @Override
             public void onAdReady(String placementId) {
                 Log.i(getClass().getSimpleName(), "Ad is ready for placement " + placementId);
-                showNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
+                showToastNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
                 showAdTextViewContainer.setBackgroundResource(R.color.colorPrimaryDark);
                 showAdTextView.setEnabled(true);
                 progressBar.setVisibility(View.GONE);
+                adIsLoaded = true;
             }
         });
     }
@@ -82,19 +82,21 @@ public class ShowPlacementActivity extends AbstractActivity {
         loadAdTextView.setOnClickListener(view -> {
             try {
                 if (placement.hasAd()) {
-                    if (!adIsLoaded) {
+                    if (!adIsLoaded && !adIsLoading) {
                         progressBar.setVisibility(View.VISIBLE);
                         Method loadAd = placement.getClass().getDeclaredMethod("loadAd");
                         loadAd.setAccessible(true);
                         loadAd.invoke(placement);
-                        adIsLoaded = true;
+                        adIsLoading = true;
+                    } else if (adIsLoading && !adIsLoaded) {
+                        showToastNotification(getString(R.string.notification_add_is_loading), Toast.LENGTH_SHORT, false);
                     } else {
-                        showNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
+                        showToastNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
                     }
                 } else if (!placement.isOperative()) {
-                    showNotification(getString(R.string.notification_error_placements_is_inactive), Toast.LENGTH_SHORT, true);
+                    showToastNotification(getString(R.string.notification_error_placements_is_inactive), Toast.LENGTH_SHORT, true);
                 } else {
-                    showNotification(getString(R.string.notification_error_no_fill), Toast.LENGTH_SHORT, true);
+                    showToastNotification(getString(R.string.notification_error_no_fill), Toast.LENGTH_SHORT, true);
                 }
             } catch (Throwable e) {
                 Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);

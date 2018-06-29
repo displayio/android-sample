@@ -1,4 +1,4 @@
-package io.display.displayiosampleapp.listeners;
+package io.display.displayiosampleapp.base.listeners;
 
 public interface OnRecyclerViewItemClickListener {
 

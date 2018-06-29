@@ -1,4 +1,4 @@
-package io.display.displayiosampleapp.util;
+package io.display.displayiosampleapp.base.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;

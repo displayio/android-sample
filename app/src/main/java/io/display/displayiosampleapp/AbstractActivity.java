@@ -12,18 +12,89 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import io.display.displayiosampleapp.util.StaticValues;
+import io.display.displayiosampleapp.base.util.StaticValues;
 import io.display.sdk.Controller;
+import io.display.sdk.EventListener;
 import io.display.sdk.Placement;
+import io.display.sdk.ads.supers.RewardedVideoAd;
 
 public abstract class AbstractActivity extends AppCompatActivity {
 
     private final String TAG = getClass().getSimpleName();
+    private final String APP_ID = "12345";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Controller.getInstance().init(this, StaticValues.APP_ID, false);
+        Controller.getInstance().init(this, APP_ID, false);
+        Controller.getInstance().setEventListener(new EventListener() {
+            @Override
+            public void onInit() {
+                Log.i(TAG, "Controller initialized");
+            }
+
+            @Override
+            public void onInitError(String msg) {
+                Log.e(TAG, msg);
+            }
+
+            @Override
+            public void onAdShown(String placementId) {
+                Log.i(TAG, "Ad was shown for placement " + placementId);
+            }
+
+            @Override
+            public void onAdFailedToShow(String placementId) {
+                Log.e(TAG, "Ad is failed to show for placement " + placementId);
+            }
+
+            @Override
+            public void onNoAds(String placementId) {
+                Log.e(TAG, "No ads for placement " + placementId);
+            }
+
+            @Override
+            public void onAdCompleted(String placementId) {
+                Log.i(TAG, "Ad is completed for placement " + placementId);
+            }
+
+            @Override
+            public void onAdClose(String placementId) {
+                Log.i(TAG, "Ad is closed for placement " + placementId);
+            }
+
+            @Override
+            public void onAdClick(String placementId) {
+                Log.i(TAG, "Ad is clicked for placement " + placementId);
+            }
+
+            @Override
+            public void onAdReady(String placementId) {
+                Log.i(TAG, "Ad is ready for placement " + placementId);
+            }
+
+            @Override
+            public void onRewardedVideoCompleted(String placementId, RewardedVideoAd.Reward reward) {
+                Log.i(TAG, "Rewarded video is completed for placement " + placementId);
+            }
+
+            @Override
+            public void inactivate() {
+                Log.i(TAG, "Inactivating event listener");
+                super.inactivate();
+            }
+
+            @Override
+            public void activate() {
+                Log.i(TAG, "Activating event listener");
+                super.activate();
+            }
+
+            @Override
+            public boolean isActive() {
+                return super.isActive();
+            }
+        });
     }
 
     @Override
@@ -36,11 +107,13 @@ public abstract class AbstractActivity extends AppCompatActivity {
         Placement placement = Controller.getInstance().placements.get(placementId);
 
         if (placement == null) {
-            Log.e(TAG,"Can not show ad. Placement is null");
+            Log.e(TAG, "Can not show ad. Placement is null");
+            Controller.getInstance().getEventListener().onAdFailedToShow(placementId);
             return;
         }
         if (!placement.hasAd()) {
-            Log.e(TAG,"Can not show ad. Placement has no ad");
+            Log.e(TAG, "Can not show ad. Placement has no ad");
+            Controller.getInstance().getEventListener().onNoAds(placementId);
             return;
         }
 
@@ -63,7 +136,8 @@ public abstract class AbstractActivity extends AppCompatActivity {
                     break;
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Parsing data error", e);
+            Controller.getInstance().getEventListener().onAdFailedToShow(placementId);
         }
     }
 
@@ -74,7 +148,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
         }
     }
 
-    public void showNotification(String message, int length, boolean error) {
+    public void showToastNotification(String message, int length, boolean error) {
         Toast toast = Toast.makeText(this, message, length);
         toast.getView().setBackgroundResource(error ? R.drawable.bg_red_toast : R.drawable.bg_green_toast);
         toast.show();
