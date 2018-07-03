@@ -1,13 +1,10 @@
 package io.display.displayiosampleapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -139,18 +136,5 @@ public abstract class AbstractActivity extends AppCompatActivity {
             Log.e(TAG, "Parsing data error", e);
             Controller.getInstance().getEventListener().onAdFailedToShow(placementId);
         }
-    }
-
-    public void hideKeyBoard() {
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null && getCurrentFocus() != null) {
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }
-    }
-
-    public void showToastNotification(String message, int length, boolean error) {
-        Toast toast = Toast.makeText(this, message, length);
-        toast.getView().setBackgroundResource(error ? R.drawable.bg_red_toast : R.drawable.bg_green_toast);
-        toast.show();
     }
 }

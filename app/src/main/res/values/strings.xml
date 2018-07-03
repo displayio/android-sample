@@ -28,4 +28,7 @@
     <string name="notification_error_placements_is_inactive">Placement is inactive</string>
     <string name="notification_error_no_app_for_the_id">No app for the ID</string>
     <string name="notification_error_no_fill">No fill</string>
+
+    <!-- Native ad -->
+    <string name="sponsored">Sponsored</string>
 </resources>

@@ -1,5 +1,6 @@
 package io.display.displayiosampleapp.base.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import io.display.displayiosampleapp.AbstractActivity;
@@ -26,6 +28,7 @@ public class ShowPlacementActivity extends AbstractActivity {
     private ProgressBar progressBar;
 
     private Placement placement;
+    private String appId;
     private boolean adIsLoaded;
     private boolean adIsLoading;
 
@@ -34,24 +37,42 @@ public class ShowPlacementActivity extends AbstractActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_placement);
 
+        if (getIntent() != null) {
+            setupPlacement(getIntent().getStringExtra(StaticValues.PLACEMENT_ID), getIntent().getStringExtra(StaticValues.APP_ID));
+            setupTextViews();
+        }
+
         setupAdsController();
         setupButtons();
         setupProgressBar();
         setupBackImageView();
         setupSdkVersion();
-
-        if (getIntent() != null) {
-            setupPlacement(getIntent().getStringExtra(StaticValues.PLACEMENT_ID));
-            setupTextViews();
-        }
     }
 
-    private void setupPlacement(String placementId) {
+    private void setupPlacement(String placementId, String appId) {
         placement = Controller.getInstance().placements.get(placementId);
+        this.appId = appId;
     }
 
     private void setupAdsController() {
-        Controller.getInstance().setEventListener(new EventListener() {
+        Controller controller = Controller.getInstance();
+        //controller.setNativeAdCaching(placement.getId(), true);
+
+        try {
+            Class[] paramTypes = new Class[]{Context.class, String.class, boolean.class};
+            Method method = controller.getClass().getDeclaredMethod("a", paramTypes);
+            method.setAccessible(true);
+            Object[] args = new Object[]{this, appId, false};
+            method.invoke(controller, args);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        controller.setEventListener(new EventListener() {
 
             @Override
             public void onAdReady(String placementId) {
@@ -121,5 +142,11 @@ public class ShowPlacementActivity extends AbstractActivity {
     private void setupSdkVersion() {
         TextView sdkVersionTextView = findViewById(R.id.text_view_show_placement_sdk_version);
         sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), BuildConfig.VERSION_NAME));
+    }
+
+    private void showToastNotification(String message, int length, boolean error) {
+        Toast toast = Toast.makeText(this, message, length);
+        toast.getView().setBackgroundResource(error ? R.drawable.bg_red_toast : R.drawable.bg_green_toast);
+        toast.show();
     }
 }

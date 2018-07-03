@@ -15,6 +15,8 @@ public class SharedPreferencesManager {
 
     private static final String USER_DEFINED_PLACEMENTS_KEY = "user_defined_placements";
 
+    private static final String USER_DEFINED_PLACEMENTS_APP_IDS_KEY = "user_defined_placements_app_ids";
+
     private static SharedPreferencesManager manager;
 
     private SharedPreferences sharedPreferences;
@@ -34,31 +36,47 @@ public class SharedPreferencesManager {
         return sharedPreferences.getString(USER_DEFINED_PLACEMENTS_KEY, "{}");
     }
 
-    public void addNewPlacement(Placement placement) {
+    public String getUserDefinedPlacementsAppIds() {
+        return sharedPreferences.getString(USER_DEFINED_PLACEMENTS_APP_IDS_KEY, "{}");
+    }
+
+    public void addNewPlacement(Placement placement, String appId) {
         String placementsString = getUserDefinedPlacements();
+        String placementsAppIdsString = getUserDefinedPlacementsAppIds();
         try {
             JSONObject placementsJson = new JSONObject(placementsString);
             placementsJson.put(placement.getId(), placement.getData());
             placementsString = placementsJson.toString();
+
+            JSONObject placementsAppIdsJson = new JSONObject(placementsAppIdsString);
+            placementsAppIdsJson.put(placement.getId(), appId);
+            placementsAppIdsString = placementsAppIdsJson.toString();
         } catch (JSONException e) {
             Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
         }
         sharedPreferences.edit()
                 .putString(USER_DEFINED_PLACEMENTS_KEY, placementsString)
+                .putString(USER_DEFINED_PLACEMENTS_APP_IDS_KEY, placementsAppIdsString)
                 .apply();
     }
 
     public void removePlacement(Placement placement) {
         String placementsString = getUserDefinedPlacements();
+        String placementsAppIdsString = getUserDefinedPlacementsAppIds();
         try {
             JSONObject placementsJson = new JSONObject(placementsString);
             placementsJson.remove(placement.getId());
             placementsString = placementsJson.toString();
+
+            JSONObject placementsAppIdsJson = new JSONObject(placementsAppIdsString);
+            placementsAppIdsJson.remove(placement.getId());
+            placementsAppIdsString = placementsAppIdsJson.toString();
         } catch (JSONException e) {
             Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
         }
         sharedPreferences.edit()
                 .putString(USER_DEFINED_PLACEMENTS_KEY, placementsString)
+                .putString(USER_DEFINED_PLACEMENTS_APP_IDS_KEY, placementsAppIdsString)
                 .apply();
     }
 }

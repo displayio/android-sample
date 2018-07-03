@@ -1,50 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ad_item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="2dp"
     android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
-    android:layout_marginTop="2dp">
-
-    <ImageView
-        android:id="@+id/imageView_app_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp" />
+    android:layout_marginTop="2dp"
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView_app_name"
+        android:id="@+id/text_view_native_ad_app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp"
-        android:layout_toEndOf="@id/imageView_app_icon"
-        android:layout_toRightOf="@id/imageView_app_icon"
-        android:textColor="@android:color/black"
-        android:textSize="16sp" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/colorBlack"
+        android:textSize="16sp"
+        app:fontFamily="@font/montserrat_medium"
+        tools:text="Display.io ShowCase" />
 
-    <android.support.v7.widget.AppCompatRatingBar
-        android:id="@+id/ratingBar"
-        style="@style/Base.Widget.AppCompat.RatingBar.Small"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textView_app_name"
-        android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp"
-        android:layout_toEndOf="@id/imageView_app_icon"
-        android:layout_toRightOf="@id/imageView_app_icon" />
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/button_cta"
-        android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/image_view_app_icon"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="8dp"
+            android:src="@mipmap/ic_launcher" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/sponsored"
+                android:textColor="@color/colorDarkGrey"
+                android:textSize="12sp"
+                app:fontFamily="@font/montserrat_regular" />
+
+            <TextView
+                android:id="@+id/text_view_native_ad_app_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:textSize="14sp"
+                app:fontFamily="@font/montserrat_regular"
+                tools:text="Display.io is an Android Monetization platform connecting to mobile app developers via SDK or API." />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/image_view_logo_big"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:background="?attr/selectableItemBackground"
-        android:textColor="@color/colorPrimaryDark" />
-</RelativeLayout>
+        android:layout_margin="8dp"
+        android:src="@mipmap/ic_launcher" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorLightBlue">
+
+        <RelativeLayout
+            android:id="@+id/relative_layout_cta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:padding="4dp">
+
+            <TextView
+                android:id="@+id/text_view_cta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/image_view_cta"
+                android:layout_toStartOf="@id/image_view_cta"
+                android:paddingLeft="4dp"
+                android:paddingStart="4dp"
+                android:textAllCaps="true"
+                android:textColor="@color/colorWhite"
+                app:fontFamily="@font/montserrat_medium"
+                tools:text="Install" />
+
+            <ImageView
+                android:id="@+id/image_view_cta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_chevron_right" />
+
+        </RelativeLayout>
+    </FrameLayout>
+</LinearLayout>

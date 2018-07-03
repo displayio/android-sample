@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
@@ -15,10 +16,11 @@ import org.json.JSONObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
-import io.display.displayiosampleapp.AbstractActivity;
 import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.base.adapter.PlacementsAdapter;
 import io.display.displayiosampleapp.base.listeners.OnRecyclerViewItemClickListener;
@@ -29,13 +31,15 @@ import io.display.sdk.Controller;
 import io.display.sdk.DioSdkException;
 import io.display.sdk.Placement;
 
-public class MainActivity extends AbstractActivity implements OnRecyclerViewItemClickListener {
+public class MainActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener {
 
     private PlacementsAdapter predefinedPlacementsAdapter;
     private PlacementsAdapter userDefinedPlacementsAdapter;
 
     private List<Placement> predefinedPlacements = new ArrayList<>();
     private List<Placement> userDefinedPlacements = new ArrayList<>();
+
+    private Map<String, String> appIds = new HashMap<>();
 
     private long backPressedTimeOut = 0;
 
@@ -54,6 +58,10 @@ public class MainActivity extends AbstractActivity implements OnRecyclerViewItem
         super.onResume();
 
         Controller controller = Controller.getInstance();
+        controller.setNativeAdCaching("3265", true);
+        controller.init(this, null);
+        controller.onDestroy();
+
         try {
             Method method = controller.getClass().getDeclaredMethod("f");
             method.setAccessible(true);
@@ -69,6 +77,8 @@ public class MainActivity extends AbstractActivity implements OnRecyclerViewItem
         getPlacements(true);
         userDefinedPlacementsAdapter.setPlacements(userDefinedPlacements);
         userDefinedPlacementsAdapter.notifyDataSetChanged();
+
+        parseAppIds();
     }
 
     private void setupSdkVersion() {
@@ -116,9 +126,31 @@ public class MainActivity extends AbstractActivity implements OnRecyclerViewItem
     }
 
     private void removePlacement(int position) {
+        if (userDefinedPlacements.isEmpty()) {
+            return;
+        }
+
+        if (position < 0) {
+            return;
+        }
+
         SharedPreferencesManager.getInstance(this.getApplicationContext()).removePlacement(userDefinedPlacements.remove(position));
         userDefinedPlacementsAdapter.setPlacements(userDefinedPlacements);
         userDefinedPlacementsAdapter.notifyItemRemoved(position);
+    }
+
+    private void parseAppIds() {
+        try {
+            JSONObject appIdsJson = new JSONObject(SharedPreferencesManager.getInstance(this.getApplicationContext()).getUserDefinedPlacementsAppIds());
+            Iterator keys = appIdsJson.keys();
+
+            while (keys.hasNext()) {
+                String key = keys.next().toString();
+                appIds.put(key, appIdsJson.getString(key));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private List<Placement> parsePlacements(String placementsString) {
@@ -167,8 +199,11 @@ public class MainActivity extends AbstractActivity implements OnRecyclerViewItem
 
     @Override
     public void onItemClick(int position, int section) {
+        String placementId = section == 0 ? predefinedPlacements.get(position).getId() : userDefinedPlacements.get(position).getId();
+        String appId =  appIds.get(placementId) != null ? appIds.get(placementId) : StaticValues.APP_ID;
         startActivity(new Intent(this, ShowPlacementActivity.class)
-                .putExtra(StaticValues.PLACEMENT_ID, section == 0 ? predefinedPlacements.get(position).getId() : userDefinedPlacements.get(position).getId()));
+                .putExtra(StaticValues.APP_ID, appId)
+                .putExtra(StaticValues.PLACEMENT_ID, placementId));
     }
 
     @Override

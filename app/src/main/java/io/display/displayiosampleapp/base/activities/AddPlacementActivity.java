@@ -2,10 +2,12 @@ package io.display.displayiosampleapp.base.activities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -20,7 +22,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
 
-import io.display.displayiosampleapp.AbstractActivity;
 import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.base.adapter.PlacementsAdapter;
 import io.display.displayiosampleapp.base.listeners.OnRecyclerViewItemClickListener;
@@ -30,12 +31,13 @@ import io.display.sdk.Controller;
 import io.display.sdk.EventListener;
 import io.display.sdk.Placement;
 
-public class AddPlacementActivity extends AbstractActivity implements OnRecyclerViewItemClickListener {
+public class AddPlacementActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener {
 
     private EditText appIdEditText;
     private ProgressBar addPlacementsProgressBar;
     private PlacementsAdapter addPlacementsAdapter;
     private ArrayList<Placement> placements;
+    private String appId;
 
     private Controller adsController;
 
@@ -117,7 +119,8 @@ public class AddPlacementActivity extends AbstractActivity implements OnRecycler
     private void setupGetPlacementsTextView() {
         TextView getPlacementsTextView = findViewById(R.id.text_view_get_placement);
         getPlacementsTextView.setOnClickListener(view -> {
-            refreshController(this, appIdEditText.getText().toString(), false);
+            appId = appIdEditText.getText().toString();
+            refreshController(this, appId, false);
             addPlacementsAdapter.setPlacements(new ArrayList<>());
             addPlacementsAdapter.notifyDataSetChanged();
             addPlacementsProgressBar.setVisibility(View.VISIBLE);
@@ -150,9 +153,22 @@ public class AddPlacementActivity extends AbstractActivity implements OnRecycler
         }
     }
 
+    private void hideKeyBoard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null && getCurrentFocus() != null) {
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    private void showToastNotification(String message, int length, boolean error) {
+        Toast toast = Toast.makeText(this, message, length);
+        toast.getView().setBackgroundResource(error ? R.drawable.bg_red_toast : R.drawable.bg_green_toast);
+        toast.show();
+    }
+
     @Override
     public void onItemClick(int position, int section) {
-        SharedPreferencesManager.getInstance(this.getApplicationContext()).addNewPlacement(placements.get(position));
+        SharedPreferencesManager.getInstance(this.getApplicationContext()).addNewPlacement(placements.get(position), appId);
         showToastNotification(getString(R.string.notification_success_placement_was_loaded), Toast.LENGTH_LONG, false);
         finish();
     }

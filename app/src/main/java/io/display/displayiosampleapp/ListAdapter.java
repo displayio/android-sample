@@ -3,14 +3,13 @@ package io.display.displayiosampleapp;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -18,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.display.sdk.Controller;
+import io.display.sdk.DioSdkException;
+import io.display.sdk.ads.Ad;
 import io.display.sdk.ads.InfeedAdContainer;
 import io.display.sdk.ads.supers.NativeAd;
 
@@ -78,11 +79,11 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                 NativeAdViewHolder nativeAddViewHolder = (NativeAdViewHolder) holder;
                 nativeAddViewHolder.appIcon.setImageBitmap(nativeAd.getIconBitmap(NativeAd.ICON_SIZE_200));
+                nativeAddViewHolder.appLogo.setImageBitmap(nativeAd.getCreativeBitmap());
                 nativeAddViewHolder.appName.setText(nativeAd.getAppName());
-                nativeAddViewHolder.appRatingBar.setRating((float) nativeAd.getRating());
-                nativeAddViewHolder.ctaButton.setText(nativeAd.getCallToAction());
-
-                nativeAddViewHolder.ctaButton.setOnClickListener(view -> nativeAd.sendClick(context));
+                nativeAddViewHolder.appDescription.setText(nativeAd.getDescription());
+                nativeAddViewHolder.ctaText.setText(nativeAd.getCallToAction());
+                nativeAddViewHolder.ctaFrame.setOnClickListener(view -> nativeAd.sendClick(context));
             } else {
                 InfeedAdContainer infeedAdContainer = Controller.getInstance().getInfeedAdContainer(context, this.placementId);
                 infeedAdContainer.bindTo((FrameLayout) ((AdViewHolder) holder).itemView);
@@ -131,16 +132,20 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         ImageView appIcon;
         TextView appName;
-        RatingBar appRatingBar;
-        Button ctaButton;
+        TextView appDescription;
+        ImageView appLogo;
+        RelativeLayout ctaFrame;
+        TextView ctaText;
 
         NativeAdViewHolder(View itemView) {
             super(itemView);
 
-            appIcon = itemView.findViewById(R.id.imageView_app_icon);
-            appName = itemView.findViewById(R.id.textView_app_name);
-            appRatingBar = itemView.findViewById(R.id.ratingBar);
-            ctaButton = itemView.findViewById(R.id.button_cta);
+            appIcon = itemView.findViewById(R.id.image_view_app_icon);
+            appName = itemView.findViewById(R.id.text_view_native_ad_app_name);
+            appDescription = itemView.findViewById(R.id.text_view_native_ad_app_description);
+            appLogo = itemView.findViewById(R.id.image_view_logo_big);
+            ctaFrame = itemView.findViewById(R.id.relative_layout_cta);
+            ctaText = itemView.findViewById(R.id.text_view_cta);
         }
     }
 }

@@ -30,6 +30,6 @@ public class ListActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recycler_view_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         List<Integer> imagesIds = Arrays.asList(R.drawable.image_0, R.drawable.image_1, R.drawable.image_2, R.drawable.image_3, R.drawable.image_4, R.drawable.image_5, R.drawable.image_6, R.drawable.image_7);
-        recyclerView.setAdapter(new ListAdapter(imagesIds, new int[]{4}, placementId, isNativeAdd));
+        recyclerView.setAdapter(new ListAdapter(imagesIds, new int[]{3}, placementId, isNativeAdd));
     }
 }
