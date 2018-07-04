@@ -120,7 +120,7 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
         TextView getPlacementsTextView = findViewById(R.id.text_view_get_placement);
         getPlacementsTextView.setOnClickListener(view -> {
             appId = appIdEditText.getText().toString();
-            refreshController(this, appId, false);
+            refreshController(this, appId);
             addPlacementsAdapter.setPlacements(new ArrayList<>());
             addPlacementsAdapter.notifyDataSetChanged();
             addPlacementsProgressBar.setVisibility(View.VISIBLE);
@@ -137,13 +137,18 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
         sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), BuildConfig.VERSION_NAME));
     }
 
-    private void refreshController(Context context, String appId, boolean preloadAd) {
+    private void refreshController(Context context, String appId) {
+        adsController.setNativeAdCaching("3265", true);
         try {
             Class[] paramTypes = new Class[]{Context.class, String.class, boolean.class};
-            Method method = adsController.getClass().getDeclaredMethod("a", paramTypes);
-            method.setAccessible(true);
-            Object[] args = new Object[]{context, appId, preloadAd};
-            method.invoke(adsController, args);
+            Method a = adsController.getClass().getDeclaredMethod("a", paramTypes);
+            a.setAccessible(true);
+            Object[] args = new Object[]{context, appId, false};
+            a.invoke(adsController, args);
+
+            Method f = adsController.getClass().getDeclaredMethod("f");
+            f.setAccessible(true);
+            f.invoke(adsController);
         } catch (IllegalAccessException e) {
             Log.e(TAG, e.getLocalizedMessage(), e);
         } catch (NoSuchMethodException e) {

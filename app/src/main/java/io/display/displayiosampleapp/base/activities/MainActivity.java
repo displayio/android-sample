@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setupController();
         setupSdkVersion();
         setupPlacementsList();
         setupAddPlacementTextView();
@@ -57,18 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
     protected void onResume() {
         super.onResume();
 
-        Controller controller = Controller.getInstance();
-        controller.setNativeAdCaching("3265", true);
-        controller.init(this, null);
-        controller.onDestroy();
-
-        try {
-            Method method = controller.getClass().getDeclaredMethod("f");
-            method.setAccessible(true);
-            method.invoke(controller);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
+        Controller.getInstance().onDestroy();
 
         getPlacements(false);
         predefinedPlacementsAdapter.setPlacements(predefinedPlacements);
@@ -79,6 +69,19 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         userDefinedPlacementsAdapter.notifyDataSetChanged();
 
         parseAppIds();
+    }
+
+    private void setupController() {
+        Controller controller = Controller.getInstance();
+        controller.init(this, null);
+
+        try {
+            Method method = controller.getClass().getDeclaredMethod("f");
+            method.setAccessible(true);
+            method.invoke(controller);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupSdkVersion() {
@@ -200,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
     @Override
     public void onItemClick(int position, int section) {
         String placementId = section == 0 ? predefinedPlacements.get(position).getId() : userDefinedPlacements.get(position).getId();
-        String appId =  appIds.get(placementId) != null ? appIds.get(placementId) : StaticValues.APP_ID;
+        String appId = appIds.get(placementId) != null ? appIds.get(placementId) : StaticValues.PREDEFINED_PLACEMENTS_APP_ID;
         startActivity(new Intent(this, ShowPlacementActivity.class)
                 .putExtra(StaticValues.APP_ID, appId)
                 .putExtra(StaticValues.PLACEMENT_ID, placementId));

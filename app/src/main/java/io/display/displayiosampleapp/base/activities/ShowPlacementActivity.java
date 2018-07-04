@@ -1,6 +1,5 @@
 package io.display.displayiosampleapp.base.activities;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,7 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import io.display.displayiosampleapp.AbstractActivity;
@@ -56,19 +55,17 @@ public class ShowPlacementActivity extends AbstractActivity {
 
     private void setupAdsController() {
         Controller controller = Controller.getInstance();
-        //controller.setNativeAdCaching(placement.getId(), true);
+        String placementId = placement.getId();
+        controller.setNativeAdCaching(placementId, true);
+        controller.setNativeAdOnReadyListener(placementId, nativeAd -> onAdReadyToShow(placementId));
 
         try {
-            Class[] paramTypes = new Class[]{Context.class, String.class, boolean.class};
-            Method method = controller.getClass().getDeclaredMethod("a", paramTypes);
-            method.setAccessible(true);
-            Object[] args = new Object[]{this, appId, false};
-            method.invoke(controller, args);
+            Field field = controller.getClass().getDeclaredField("b");
+            field.setAccessible(true);
+            field.set(controller, appId);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
 
@@ -76,12 +73,7 @@ public class ShowPlacementActivity extends AbstractActivity {
 
             @Override
             public void onAdReady(String placementId) {
-                Log.i(getClass().getSimpleName(), "Ad is ready for placement " + placementId);
-                showToastNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
-                showAdTextViewContainer.setBackgroundResource(R.color.colorPrimaryDark);
-                showAdTextView.setEnabled(true);
-                progressBar.setVisibility(View.GONE);
-                adIsLoaded = true;
+                onAdReadyToShow(placementId);
             }
         });
     }
@@ -128,6 +120,15 @@ public class ShowPlacementActivity extends AbstractActivity {
         showAdTextViewContainer = findViewById(R.id.frame_layout_show_add);
         showAdTextView.setOnClickListener(view -> showAd(placement.getId()));
         showAdTextView.setEnabled(false);
+    }
+
+    private void onAdReadyToShow(String placementId) {
+        Log.i(getClass().getSimpleName(), "Ad is ready for placement " + placementId);
+        showToastNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
+        showAdTextViewContainer.setBackgroundResource(R.color.colorPrimaryDark);
+        showAdTextView.setEnabled(true);
+        progressBar.setVisibility(View.GONE);
+        adIsLoaded = true;
     }
 
     private void setupBackImageView() {
