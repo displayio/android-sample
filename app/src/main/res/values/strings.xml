@@ -11,7 +11,6 @@
     <!-- Placements texts -->
     <string name="predefined_placements_header_text">display.io Pre-Defined placements</string>
     <string name="my_placements_header_text">My placements</string>
-    <string name="placeholder_placement_type">[?]</string>
     <string name="add_a_new_placement">Add a new placement</string>
     <string name="placeholder_sdk_version">SDK v%s</string>
     <string name="app_id">App ID</string>

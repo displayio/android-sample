@@ -14,9 +14,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -80,19 +77,7 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
             @Override
             public void onInitError(String msg) {
                 addPlacementsProgressBar.setVisibility(View.GONE);
-                try {
-                    String error = new JSONObject(msg.substring(msg.indexOf("{"))).getString("errMsg");
-                    switch (error) {
-                        case "app inactive":
-                            showToastNotification(getString(R.string.notification_error_app_is_inactive), Toast.LENGTH_SHORT, true);
-                            break;
-                        default:
-                            showToastNotification(getString(R.string.notification_error_no_app_for_the_id), Toast.LENGTH_SHORT, true);
-                            break;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                showToastNotification(getString(R.string.notification_error_no_app_for_the_id), Toast.LENGTH_SHORT, true);
             }
         });
     }
@@ -138,7 +123,6 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
     }
 
     private void refreshController(Context context, String appId) {
-        adsController.setNativeAdCaching("3265", true);
         try {
             Class[] paramTypes = new Class[]{Context.class, String.class, boolean.class};
             Method a = adsController.getClass().getDeclaredMethod("a", paramTypes);

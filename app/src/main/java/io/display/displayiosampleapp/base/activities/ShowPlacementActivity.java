@@ -95,7 +95,7 @@ public class ShowPlacementActivity extends AbstractActivity {
         try {
             placementTypeTextView.setText(StaticValues.AD_TYPES.get(((JSONObject) placement.getData().getJSONArray("ads").get(0)).getJSONObject("ad").getString("type")));
         } catch (JSONException e) {
-            placementTypeTextView.setText(getString(R.string.placeholder_placement_type));
+            placementTypeTextView.setText(getString(R.string.notification_error_no_fill));
         }
     }
 

@@ -73,7 +73,7 @@ public class PlacementsAdapter extends RecyclerView.Adapter<PlacementsAdapter.Pl
             try {
                 placementNameTextView.setText(StaticValues.AD_TYPES.get(((JSONObject) placement.getData().getJSONArray("ads").get(0)).getJSONObject("ad").getString("type")));
             } catch (JSONException e) {
-                placementNameTextView.setText(itemView.getContext().getString(R.string.placeholder_placement_type));
+                placementNameTextView.setText(itemView.getContext().getString(R.string.notification_error_no_fill));
             }
             removeImageView.setVisibility(removable ? View.VISIBLE : View.GONE);
             itemContainer.setOnClickListener(view -> onRecyclerViewItemClickListener.onItemClick(getAdapterPosition(), removable ? 1 : 0));
