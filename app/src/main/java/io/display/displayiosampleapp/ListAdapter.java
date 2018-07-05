@@ -77,13 +77,6 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 NativeAdViewHolder nativeAddViewHolder = (NativeAdViewHolder) holder;
                 nativeAddViewHolder.appIcon.setImageBitmap(nativeAd.getIconBitmap(NativeAd.ICON_SIZE_200));
 
-                int width = holder.itemView.getContext().getResources().getDisplayMetrics().widthPixels;
-                float aspectRatio = (float) nativeAd.getCreativeHeight() / (float) nativeAd.getCreativeWidth();
-
-                nativeAddViewHolder.appCreative.getLayoutParams().width = width;
-                nativeAddViewHolder.appCreative.getLayoutParams().height = (int) (width * aspectRatio);
-                nativeAddViewHolder.appCreative.setImageBitmap(nativeAd.getCreativeBitmap());
-
                 nativeAddViewHolder.appName.setText(nativeAd.getAppName());
                 nativeAddViewHolder.appDescription.setText(nativeAd.getDescription());
 
@@ -146,7 +139,6 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ImageView appIcon;
         TextView appName;
         TextView appDescription;
-        ImageView appCreative;
         RelativeLayout ctaFrame;
         TextView ctaText;
 
@@ -156,7 +148,6 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             appIcon = itemView.findViewById(R.id.image_view_app_icon);
             appName = itemView.findViewById(R.id.text_view_native_ad_app_name);
             appDescription = itemView.findViewById(R.id.text_view_native_ad_app_description);
-            appCreative = itemView.findViewById(R.id.image_view_creative);
             ctaFrame = itemView.findViewById(R.id.relative_layout_cta);
             ctaText = itemView.findViewById(R.id.text_view_cta);
         }
