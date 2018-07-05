@@ -45,7 +45,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        context = parent.getContext();
+        context = parent.getContext().getApplicationContext();
         switch (viewType) {
             case ADD_VIEW_TYPE:
                 if (isNativeAd) {
@@ -89,9 +89,6 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                 nativeAddViewHolder.ctaText.setText(nativeAd.getCallToAction());
                 nativeAddViewHolder.ctaFrame.setOnClickListener(view -> nativeAd.sendClick(context));
-            } else {
-                InfeedAdContainer infeedAdContainer = Controller.getInstance().getInfeedAdContainer(context, this.placementId);
-                infeedAdContainer.bindTo((FrameLayout) ((AdViewHolder) holder).itemView);
             }
         } else {
             ((ViewHolder) holder).itemImageView.setImageResource(imagesIds.get(holder.getAdapterPosition()));
@@ -101,7 +98,6 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private void checkandAttachAdToRow(RecyclerView.ViewHolder holder, int position) {
 
     }
-
 
     @Override
     public int getItemCount() {
@@ -119,17 +115,29 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    class AdViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public void onViewAttachedToWindow(@NonNull RecyclerView.ViewHolder holder) {
+        if (holder.getItemViewType() == ADD_VIEW_TYPE && !isNativeAd) {
+            InfeedAdContainer infeedAdContainer = Controller.getInstance().getInfeedAdContainer(context, this.placementId);
+            infeedAdContainer.bindTo((FrameLayout) ((AdViewHolder) holder).itemView);
+        }
+        super.onViewAttachedToWindow(holder);
+    }
 
-        RelativeLayout imageFrame;
+    @Override
+    public void onViewDetachedFromWindow(@NonNull RecyclerView.ViewHolder holder) {
+        if (holder.getItemViewType() == ADD_VIEW_TYPE && !isNativeAd) {
+            InfeedAdContainer infeedAdContainer = Controller.getInstance().getInfeedAdContainer(context, this.placementId);
+            infeedAdContainer.unbindFrom((FrameLayout) ((AdViewHolder) holder).itemView);
+        }
+
+        super.onViewDetachedFromWindow(holder);
+    }
+
+    class AdViewHolder extends RecyclerView.ViewHolder {
 
         AdViewHolder(View itemView) {
             super(itemView);
-
-            imageFrame = new RelativeLayout(itemView.getContext());
-            RelativeLayout.LayoutParams rlParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            rlParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-            imageFrame.setLayoutParams(rlParams);
         }
     }
 

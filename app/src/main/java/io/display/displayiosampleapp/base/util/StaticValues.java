@@ -21,8 +21,8 @@ public class StaticValues {
             "          \"type\": \"interstitial\",\n" +
             "          \"subtype\": \"interactive\",\n" +
             "          \"data\": {\n" +
-            "            \"clickUrl\": \"https:\\/\\/appsrv.display.io\\/click?msessId=5b39df8feb828&tls=19373754_73_11&p=3231\",\n" +
-            "            \"impressionBeacon\": \"https:\\/\\/appsrv.display.io\\/imp?msessId=5b39df8feb828&tls=19373754_73_11&p=3231\",\n" +
+            "            \"clickUrl\": \"https:\\/\\/appsrv.display.io\\/click?msessId=5b3e0f94c5267&tls=19377228_64_12&p=3231\",\n" +
+            "            \"impressionBeacon\": \"https:\\/\\/appsrv.display.io\\/imp?msessId=5b3e0f94c5267&tls=19377228_64_12&p=3231\",\n" +
             "            \"pkgName\": \"io.display.displayioshowcase\",\n" +
             "            \"appName\": \"Display.io ShowCase\",\n" +
             "            \"shortDescription\": \"Display.io is an Android Monetization platform connecting to mobile app developers via SDK or API.\",\n" +
@@ -68,7 +68,7 @@ public class StaticValues {
             "                }\n" +
             "              ]\n" +
             "            },\n" +
-            "            \"adCloseBeaconUrl\": \"https:\\/\\/appsrv.display.io\\/imp?msessId=5b39df8feb828&tls=19373754_73_11&p=3231&metric=adclose&sesslength={length}\",\n" +
+            "            \"adCloseBeaconUrl\": \"https:\\/\\/appsrv.display.io\\/imp?msessId=5b3e0f94c5267&tls=19377228_64_12&p=3231&metric=adclose&sesslength={length}\",\n" +
             "            \"skippableIn\": 5\n" +
             "          }\n" +
             "        },\n" +
@@ -88,15 +88,15 @@ public class StaticValues {
             "        \"adId\": \"RVA_io.display.displayioshowcase\",\n" +
             "        \"ad\": {\n" +
             "          \"type\": \"rewardedVideo\",\n" +
-            "          \"subtype\": \"in_app_horizontal\",\n" +
+            "          \"subtype\": \"in_app\",\n" +
             "          \"data\": {\n" +
             "            \"appCategories\": [\n" +
             "              \"Libraries & Demo\"\n" +
             "            ],\n" +
             "            \"numDownloads\": \"10+\",\n" +
             "            \"contentRating\": \"Everyone\",\n" +
-            "            \"clickUrl\": \"https:\\/\\/appsrv.display.io\\/click?msessId=5b39df785f578&tls=19373754_50_11&p=3266\",\n" +
-            "            \"impressionBeacon\": \"https:\\/\\/appsrv.display.io\\/imp?msessId=5b39df785f578&tls=19373754_50_11&p=3266\",\n" +
+            "            \"clickUrl\": \"https:\\/\\/appsrv.display.io\\/click?msessId=5b3e0f94c7576&tls=19377228_64_12&p=3266\",\n" +
+            "            \"impressionBeacon\": \"https:\\/\\/appsrv.display.io\\/imp?msessId=5b3e0f94c7576&tls=19377228_64_12&p=3266\",\n" +
             "            \"pkgName\": \"io.display.displayioshowcase\",\n" +
             "            \"appName\": \"Display.io ShowCase\",\n" +
             "            \"shortDescription\": \"Display.io is an Android Monetization platform connecting to mobile app developers via SDK or API.\",\n" +
@@ -104,7 +104,7 @@ public class StaticValues {
             "            \"icon200\": \"\\/\\/cdn.display.io\\/ctv\\/4da2bf5aefe5629c3279a8df1e8d1d45banner200200.png\",\n" +
             "            \"callToAction\": \"Install\",\n" +
             "            \"rating\": null,\n" +
-            "            \"template\": \"in_app_horizontal\",\n" +
+            "            \"template\": \"in_app\",\n" +
             "            \"creatives\": {\n" +
             "              \"carousel\": [\n" +
             "                {\n" +
@@ -137,7 +137,7 @@ public class StaticValues {
             "                }\n" +
             "              ]\n" +
             "            },\n" +
-            "            \"adCloseBeaconUrl\": \"https:\\/\\/appsrv.display.io\\/imp?msessId=5b39df785f578&tls=19373754_50_11&p=3266&metric=adclose&sesslength={length}\",\n" +
+            "            \"adCloseBeaconUrl\": \"https:\\/\\/appsrv.display.io\\/imp?msessId=5b3e0f94c7576&tls=19377228_64_12&p=3266&metric=adclose&sesslength={length}\",\n" +
             "            \"skippableIn\": 3\n" +
             "          }\n" +
             "        },\n" +
@@ -159,8 +159,8 @@ public class StaticValues {
             "          \"type\": \"infeed\",\n" +
             "          \"subtype\": \"video\",\n" +
             "          \"data\": {\n" +
-            "            \"clk\": \"https:\\/\\/appsrv.display.io\\/click?msessId=5b39df98b729a&tls=19373755_3_20&p=3264\",\n" +
-            "            \"imp\": \"https:\\/\\/appsrv.display.io\\/imp?msessId=5b39df98b729a&tls=19373755_3_20&p=3264\",\n" +
+            "            \"clk\": \"https:\\/\\/appsrv.display.io\\/click?msessId=5b3e0f94c5b1c&tls=19377228_64_12&p=3264\",\n" +
+            "            \"imp\": \"https:\\/\\/appsrv.display.io\\/imp?msessId=5b3e0f94c5b1c&tls=19377228_64_12&p=3264\",\n" +
             "            \"video\": \"https:\\/\\/cdn.display.io\\/ctv\\/asset\\/video\\/640_360.mp4\",\n" +
             "            \"vheight\": 320,\n" +
             "            \"vwidth\": 640,\n" +
@@ -185,8 +185,8 @@ public class StaticValues {
             "        \"ad\": {\n" +
             "          \"type\": \"native\",\n" +
             "          \"data\": {\n" +
-            "            \"clickUrl\": \"https:\\/\\/appsrv.display.io\\/click?msessId=5b39fa14d8d99&tls=19373840_68_15&p=3265\",\n" +
-            "            \"impressionBeacon\": \"https:\\/\\/appsrv.display.io\\/imp?msessId=5b39fa14d8d99&tls=19373840_68_15&p=3265\",\n" +
+            "            \"clickUrl\": \"https:\\/\\/appsrv.display.io\\/click?msessId=5b3e0f94c6072&tls=19377228_64_12&p=3265\",\n" +
+            "            \"impressionBeacon\": \"https:\\/\\/appsrv.display.io\\/imp?msessId=5b3e0f94c6072&tls=19377228_64_12&p=3265\",\n" +
             "            \"pkgName\": \"io.display.displayioshowcase\",\n" +
             "            \"appName\": \"Display.io ShowCase\",\n" +
             "            \"shortDescription\": \"Display.io is an Android Monetization platform connecting to mobile app developers via SDK or API.\",\n" +
@@ -216,9 +216,9 @@ public class StaticValues {
             "}";
 
     public static final HashMap<String, String> AD_TYPES = new HashMap<String, String>() {{
-        put("infeed", "[In-Feed]");
         put("interstitial", "[Interstitial]");
-        put("native", "[Native]");
         put("rewardedVideo", "[Rewarded Video]");
+        put("infeed", "[In-Feed]");
+        put("native", "[Native]");
     }};
 }
