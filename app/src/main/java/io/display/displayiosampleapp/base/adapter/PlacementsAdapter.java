@@ -9,11 +9,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.base.listeners.OnRecyclerViewItemClickListener;
+import io.display.displayiosampleapp.base.util.StaticValues;
 import io.display.sdk.Placement;
 
 public class PlacementsAdapter extends RecyclerView.Adapter<PlacementsAdapter.PlacementsViewHolder> {
@@ -65,8 +69,12 @@ public class PlacementsAdapter extends RecyclerView.Adapter<PlacementsAdapter.Pl
         }
 
         void bindData(Placement placement) {
-            placementLabelTextView.setText(String.format(removable ? itemView.getContext().getString(R.string.placeholder_placement_label_my) : itemView.getContext().getString(R.string.placeholder_placement_label_display), placement.getName()));
-            placementNameTextView.setText(String.format(itemView.getContext().getString(R.string.placeholder_placement_name), placement.getName()));
+            placementLabelTextView.setText(placement.getName());
+            try {
+                placementNameTextView.setText(StaticValues.AD_TYPES.get(((JSONObject) placement.getData().getJSONArray("ads").get(0)).getJSONObject("ad").getString("type")));
+            } catch (JSONException e) {
+                placementNameTextView.setText(itemView.getContext().getString(R.string.placeholder_placement_type));
+            }
             removeImageView.setVisibility(removable ? View.VISIBLE : View.GONE);
             itemContainer.setOnClickListener(view -> onRecyclerViewItemClickListener.onItemClick(getAdapterPosition(), removable ? 1 : 0));
             removeImageView.setOnClickListener(view -> onRecyclerViewItemClickListener.onItemButtonClicked(getAdapterPosition()));

@@ -5,11 +5,8 @@
     android:id="@+id/ad_item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="2dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="2dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/text_view_native_ad_app_name"
@@ -63,9 +60,10 @@
 
     <ImageView
         android:id="@+id/image_view_creative"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp" />
+        android:layout_gravity="center_horizontal"
+        android:padding="8dp" />
 
     <FrameLayout
         android:layout_width="match_parent"

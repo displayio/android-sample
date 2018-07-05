@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.ImageView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +25,7 @@ public class ListActivity extends AppCompatActivity {
         isNativeAdd = getIntent().getBooleanExtra(StaticValues.IS_NATIVE_ADD, false);
 
         setupRecyclerView();
+        setupBackButton();
     }
 
     private void setupRecyclerView() {
@@ -31,5 +33,10 @@ public class ListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         List<Integer> imagesIds = Arrays.asList(R.drawable.image_0, R.drawable.image_1, R.drawable.image_2, R.drawable.image_3, R.drawable.image_4, R.drawable.image_5, R.drawable.image_6, R.drawable.image_7);
         recyclerView.setAdapter(new ListAdapter(imagesIds, new int[]{3}, placementId, isNativeAdd));
+    }
+
+    private void setupBackButton() {
+        ImageView backImageView = findViewById(R.id.image_view_list_back);
+        backImageView.setOnClickListener(view -> onBackPressed());
     }
 }

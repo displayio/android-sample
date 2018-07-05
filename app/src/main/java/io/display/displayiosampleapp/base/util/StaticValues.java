@@ -1,15 +1,18 @@
 package io.display.displayiosampleapp.base.util;
 
+import java.util.HashMap;
+
 public class StaticValues {
 
     public static final String APP_ID = "app_id";
     public static final String PLACEMENT_ID = "placement_id";
     public static final String IS_NATIVE_ADD = "is_native_add";
+    public static final String IS_PREDEFINED = "is_predefined";
 
     public static final String PREDEFINED_PLACEMENTS_APP_ID = "6494";
     public static final String PREDEFINED_PLACEMENTS = "{\n" +
             "  \"3231\": {\n" +
-            "    \"name\": \"Interstitial\",\n" +
+            "    \"name\": \"display.io Interstitial\",\n" +
             "    \"status\": \"enabled\",\n" +
             "    \"ads\": [\n" +
             "      {\n" +
@@ -78,7 +81,7 @@ public class StaticValues {
             "    ]\n" +
             "  },\n" +
             "  \"3266\": {\n" +
-            "    \"name\": \"Rewarded Video\",\n" +
+            "    \"name\": \"display.io Rewarded Video\",\n" +
             "    \"status\": \"enabled\",\n" +
             "    \"ads\": [\n" +
             "      {\n" +
@@ -147,7 +150,7 @@ public class StaticValues {
             "    ]\n" +
             "  },\n" +
             "  \"3264\": {\n" +
-            "    \"name\": \"In-Feed\",\n" +
+            "    \"name\": \"display.io In-Feed\",\n" +
             "    \"status\": \"enabled\",\n" +
             "    \"ads\": [\n" +
             "      {\n" +
@@ -174,7 +177,7 @@ public class StaticValues {
             "    ]\n" +
             "  },\n" +
             "  \"3265\": {\n" +
-            "    \"name\": \"Native\",\n" +
+            "    \"name\": \"display.io Native\",\n" +
             "    \"status\": \"enabled\",\n" +
             "    \"ads\": [\n" +
             "      {\n" +
@@ -211,4 +214,11 @@ public class StaticValues {
             "    ]\n" +
             "  }\n" +
             "}";
+
+    public static final HashMap<String, String> AD_TYPES = new HashMap<String, String>() {{
+        put("infeed", "[In-Feed]");
+        put("interstitial", "[Interstitial]");
+        put("native", "[Native]");
+        put("rewardedVideo", "[Rewarded Video]");
+    }};
 }

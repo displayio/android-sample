@@ -205,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         String placementId = section == 0 ? predefinedPlacements.get(position).getId() : userDefinedPlacements.get(position).getId();
         String appId = appIds.get(placementId) != null ? appIds.get(placementId) : StaticValues.PREDEFINED_PLACEMENTS_APP_ID;
         startActivity(new Intent(this, ShowPlacementActivity.class)
+                .putExtra(StaticValues.IS_PREDEFINED, section == 0)
                 .putExtra(StaticValues.APP_ID, appId)
                 .putExtra(StaticValues.PLACEMENT_ID, placementId));
     }
@@ -212,10 +213,10 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
     @Override
     public void onItemButtonClicked(int position) {
         AlertDialog alert = new AlertDialog.Builder(this).create();
-        alert.setTitle("Remove placement");
-        alert.setMessage("Are you sure you want to remove '" + String.format(getString(R.string.placeholder_placement_label_my), userDefinedPlacements.get(position).getName()) + "' placement?");
-        alert.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", (dialog, which) -> removePlacement(position));
-        alert.setButton(DialogInterface.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
+        alert.setTitle(getString(R.string.dialog_title_remove_placement));
+        alert.setMessage(String.format(getString(R.string.dialog_message_remove_placement), userDefinedPlacements.get(position).getName()));
+        alert.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.text_yes), (dialog, which) -> removePlacement(position));
+        alert.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.text_no), (dialog, which) -> dialog.dismiss());
         alert.show();
     }
 }

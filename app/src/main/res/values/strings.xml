@@ -11,9 +11,7 @@
     <!-- Placements texts -->
     <string name="predefined_placements_header_text">display.io Pre-Defined placements</string>
     <string name="my_placements_header_text">My placements</string>
-    <string name="placeholder_placement_label_display">display.io %s</string>
-    <string name="placeholder_placement_label_my">My %s</string>
-    <string name="placeholder_placement_name">[%s]</string>
+    <string name="placeholder_placement_type">[?]</string>
     <string name="add_a_new_placement">Add a new placement</string>
     <string name="placeholder_sdk_version">SDK v%s</string>
     <string name="app_id">App ID</string>
@@ -31,4 +29,10 @@
 
     <!-- Native ad -->
     <string name="sponsored">Sponsored</string>
+
+    <!-- Remove placement dialog -->
+    <string name="dialog_title_remove_placement">Remove placement</string>
+    <string name="dialog_message_remove_placement">Are you sure you want to remove \"%s\" placement?</string>
+    <string name="text_yes">Yes</string>
+    <string name="text_no">No</string>
 </resources>

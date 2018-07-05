@@ -9,6 +9,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -28,6 +31,7 @@ public class ShowPlacementActivity extends AbstractActivity {
 
     private Placement placement;
     private String appId;
+    private boolean isPredefined;
     private boolean adIsLoaded;
     private boolean adIsLoading;
 
@@ -37,6 +41,7 @@ public class ShowPlacementActivity extends AbstractActivity {
         setContentView(R.layout.activity_show_placement);
 
         if (getIntent() != null) {
+            isPredefined = getIntent().getBooleanExtra(StaticValues.IS_PREDEFINED, false);
             setupPlacement(getIntent().getStringExtra(StaticValues.PLACEMENT_ID), getIntent().getStringExtra(StaticValues.APP_ID));
             setupTextViews();
         }
@@ -87,7 +92,11 @@ public class ShowPlacementActivity extends AbstractActivity {
         placementNameTextView.setText(placement.getName());
 
         TextView placementTypeTextView = findViewById(R.id.text_view_show_placement_type);
-        placementTypeTextView.setText(String.format(getString(R.string.placeholder_placement_name), placement.getName()));
+        try {
+            placementTypeTextView.setText(StaticValues.AD_TYPES.get(((JSONObject) placement.getData().getJSONArray("ads").get(0)).getJSONObject("ad").getString("type")));
+        } catch (JSONException e) {
+            placementTypeTextView.setText(getString(R.string.placeholder_placement_type));
+        }
     }
 
     private void setupButtons() {

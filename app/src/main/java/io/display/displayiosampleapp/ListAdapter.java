@@ -76,9 +76,17 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                 NativeAdViewHolder nativeAddViewHolder = (NativeAdViewHolder) holder;
                 nativeAddViewHolder.appIcon.setImageBitmap(nativeAd.getIconBitmap(NativeAd.ICON_SIZE_200));
+
+                int width = holder.itemView.getContext().getResources().getDisplayMetrics().widthPixels;
+                float aspectRatio = (float) nativeAd.getCreativeHeight() / (float) nativeAd.getCreativeWidth();
+
+                nativeAddViewHolder.appCreative.getLayoutParams().width = width;
+                nativeAddViewHolder.appCreative.getLayoutParams().height = (int) (width * aspectRatio);
                 nativeAddViewHolder.appCreative.setImageBitmap(nativeAd.getCreativeBitmap());
+
                 nativeAddViewHolder.appName.setText(nativeAd.getAppName());
                 nativeAddViewHolder.appDescription.setText(nativeAd.getDescription());
+
                 nativeAddViewHolder.ctaText.setText(nativeAd.getCallToAction());
                 nativeAddViewHolder.ctaFrame.setOnClickListener(view -> nativeAd.sendClick(context));
             } else {
