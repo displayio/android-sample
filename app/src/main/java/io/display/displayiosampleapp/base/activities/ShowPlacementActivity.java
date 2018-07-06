@@ -18,10 +18,10 @@ import java.lang.reflect.Method;
 import io.display.displayiosampleapp.AbstractActivity;
 import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.base.util.StaticValues;
-import io.display.sdk.BuildConfig;
 import io.display.sdk.Controller;
 import io.display.sdk.EventListener;
 import io.display.sdk.Placement;
+import io.display.sdk.ServiceClient;
 
 public class ShowPlacementActivity extends AbstractActivity {
 
@@ -62,7 +62,6 @@ public class ShowPlacementActivity extends AbstractActivity {
         Controller controller = Controller.getInstance();
         String placementId = placement.getId();
         controller.setNativeAdCaching(placementId, true);
-        controller.setNativeAdOnReadyListener(placementId, nativeAd -> onAdReadyToShow(placementId));
 
         try {
             Field field = controller.getClass().getDeclaredField("b");
@@ -102,26 +101,26 @@ public class ShowPlacementActivity extends AbstractActivity {
     private void setupButtons() {
         TextView loadAdTextView = findViewById(R.id.text_view_load_ad);
         loadAdTextView.setOnClickListener(view -> {
-            try {
-                if (placement.hasAd()) {
-                    if (!adIsLoaded && !adIsLoading) {
+            if (placement.hasAd()) {
+                if (!adIsLoaded && !adIsLoading) {
+                    try {
                         progressBar.setVisibility(View.VISIBLE);
                         Method loadAd = placement.getClass().getDeclaredMethod("loadAd");
                         loadAd.setAccessible(true);
                         loadAd.invoke(placement);
                         adIsLoading = true;
-                    } else if (adIsLoading && !adIsLoaded) {
-                        showToastNotification(getString(R.string.notification_add_is_loading), Toast.LENGTH_SHORT, false);
-                    } else {
-                        showToastNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
+                    } catch (Throwable e) {
+                        Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
                     }
-                } else if (!placement.isOperative()) {
-                    showToastNotification(getString(R.string.notification_error_placements_is_inactive), Toast.LENGTH_SHORT, true);
+                } else if (adIsLoading && !adIsLoaded) {
+                    showToastNotification(getString(R.string.notification_add_is_loading), Toast.LENGTH_SHORT, false);
                 } else {
-                    showToastNotification(getString(R.string.notification_error_no_fill), Toast.LENGTH_SHORT, true);
+                    showToastNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
                 }
-            } catch (Throwable e) {
-                Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
+            } else if (!placement.isOperative()) {
+                showToastNotification(getString(R.string.notification_error_placements_is_inactive), Toast.LENGTH_SHORT, true);
+            } else {
+                showToastNotification(getString(R.string.notification_error_no_fill), Toast.LENGTH_SHORT, true);
             }
         });
 
@@ -151,7 +150,7 @@ public class ShowPlacementActivity extends AbstractActivity {
 
     private void setupSdkVersion() {
         TextView sdkVersionTextView = findViewById(R.id.text_view_show_placement_sdk_version);
-        sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), BuildConfig.VERSION_NAME));
+        sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), Controller.getInstance().getVer()));
     }
 
     private void showToastNotification(String message, int length, boolean error) {

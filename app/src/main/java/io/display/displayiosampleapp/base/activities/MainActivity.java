@@ -1,6 +1,7 @@
 package io.display.displayiosampleapp.base.activities;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import io.display.sdk.BuildConfig;
 import io.display.sdk.Controller;
 import io.display.sdk.DioSdkException;
 import io.display.sdk.Placement;
+import io.display.sdk.ServiceClient;
 
 public class MainActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener {
 
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
 
     private void setupSdkVersion() {
         TextView sdkVersionTextView = findViewById(R.id.text_view_main_sdk_version);
-        sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), BuildConfig.VERSION_NAME));
+        sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), Controller.getInstance().getVer()));
     }
 
     private void setupPlacementsList() {
@@ -188,6 +190,12 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
             e.printStackTrace();
         }
         return placements;
+    }
+
+    @Override
+    protected void onDestroy() {
+        Controller.getInstance().onDestroy();
+        super.onDestroy();
     }
 
     @Override

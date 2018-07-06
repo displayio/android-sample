@@ -119,7 +119,7 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
 
     private void setupSdkVersion() {
         TextView sdkVersionTextView = findViewById(R.id.text_view_add_placement_sdk_version);
-        sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), BuildConfig.VERSION_NAME));
+        sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), Controller.getInstance().getVer()));
     }
 
     private void refreshController(Context context, String appId) {
