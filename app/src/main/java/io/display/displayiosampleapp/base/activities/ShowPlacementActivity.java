@@ -1,6 +1,7 @@
 package io.display.displayiosampleapp.base.activities;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -17,6 +18,7 @@ import java.lang.reflect.Method;
 
 import io.display.displayiosampleapp.AbstractActivity;
 import io.display.displayiosampleapp.R;
+import io.display.displayiosampleapp.base.util.SharedPreferencesManager;
 import io.display.displayiosampleapp.base.util.StaticValues;
 import io.display.sdk.Controller;
 import io.display.sdk.EventListener;
@@ -28,9 +30,11 @@ public class ShowPlacementActivity extends AbstractActivity {
     private TextView showAdTextView;
     private FrameLayout showAdTextViewContainer;
     private ProgressBar progressBar;
+    private Toast toast;
 
     private Placement placement;
     private String appId;
+    private String message;
     private boolean isPredefined;
     private boolean adIsLoaded;
     private boolean adIsLoading;
@@ -101,66 +105,67 @@ public class ShowPlacementActivity extends AbstractActivity {
     private void setupButtons() {
         TextView loadAdTextView = findViewById(R.id.text_view_load_ad);
         loadAdTextView.setOnClickListener(view -> {
-            if (placement.hasAd()) {
-                if (!adIsLoaded && !adIsLoading) {
-                    try {
-                        Class[] paramTypes = new Class[]{String.class, String.class, ServiceClient.ServiceResponseListener.class};
-                        ServiceClient client = new ServiceClient(Controller.getInstance());
-                        Method method = client.getClass().getDeclaredMethod("a", paramTypes);
-                        method.setAccessible(true);
-                        Object[] args = new Object[]{appId, placement.getId(), new ServiceClient.ServiceResponseListener() {
-                            public void onErrorResponse(String msg, JSONObject data) {
-                            }
 
-                            public void onSuccessResponse(JSONObject resp) {
-                                try {
-                                    if (placement != null) {
-                                        progressBar.setVisibility(View.VISIBLE);
+            if (!adIsLoaded && !adIsLoading) {
+                try {
+                    Class[] paramTypes = new Class[]{String.class, String.class, ServiceClient.ServiceResponseListener.class};
+                    ServiceClient client = new ServiceClient(Controller.getInstance());
+                    Method method = client.getClass().getDeclaredMethod("a", paramTypes);
+                    method.setAccessible(true);
+                    Object[] args = new Object[]{appId, placement.getId(), new ServiceClient.ServiceResponseListener() {
 
-                                        Method method = placement.getClass().getDeclaredMethod("setup", JSONObject.class);
-                                        method.setAccessible(true);
-                                        method.invoke(placement, resp);
+                        public void onErrorResponse(String msg, JSONObject data) {
+                            Log.e(getClass().getSimpleName(), msg, new RuntimeException(data.toString()));
+                        }
 
-                                        Method loadAd = placement.getClass().getDeclaredMethod("loadAd");
-                                        loadAd.setAccessible(true);
-                                        loadAd.invoke(placement);
+                        public void onSuccessResponse(JSONObject resp) {
+                            try {
+                                if (placement != null) {
+                                    progressBar.setVisibility(View.VISIBLE);
 
-                                        adIsLoading = true;
+                                    Method method = placement.getClass().getDeclaredMethod("setup", JSONObject.class);
+                                    method.setAccessible(true);
+                                    method.invoke(placement, resp);
+
+                                    SharedPreferencesManager.getInstance(ShowPlacementActivity.this.getApplicationContext()).addNewPlacement(placement, appId);
+                                    setupTextViews();
+
+                                    if (!placement.isOperative()) {
+                                        progressBar.setVisibility(View.GONE);
+                                        showToastNotification(getString(R.string.notification_error_placements_is_inactive), Toast.LENGTH_SHORT, true);
+                                        return;
                                     }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+
+                                    if (!placement.hasAd()) {
+                                        progressBar.setVisibility(View.GONE);
+                                        showToastNotification(getString(R.string.notification_error_no_fill), Toast.LENGTH_SHORT, true);
+                                        return;
+                                    }
+
+                                    Method loadAd = placement.getClass().getDeclaredMethod("loadAd");
+                                    loadAd.setAccessible(true);
+                                    loadAd.invoke(placement);
+                                    adIsLoading = true;
                                 }
+                            } catch (Exception e) {
+                                Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
                             }
+                        }
 
-                            public void onError(String error, JSONObject resp) {
-                            }
+                        public void onError(String error, JSONObject resp) {
+                            Log.e(getClass().getSimpleName(), error, new RuntimeException(resp.toString()));
+                        }
+                    }};
+                    method.invoke(client, args);
 
-                        }};
-
-                        method.invoke(client, args);
-
-                    } catch (Throwable e) {
-                        Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
-                    }
-
-//                    try {
-//                        progressBar.setVisibility(View.VISIBLE);
-//                        Method loadAd = placement.getClass().getDeclaredMethod("loadAd");
-//                        loadAd.setAccessible(true);
-//                        loadAd.invoke(placement);
-//                        adIsLoading = true;
-//                    } catch (Throwable e) {
-//                        Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
-//                    }
-                } else if (adIsLoading && !adIsLoaded) {
-                    showToastNotification(getString(R.string.notification_add_is_loading), Toast.LENGTH_SHORT, false);
-                } else {
-                    showToastNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
+                } catch (Throwable e) {
+                    Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
                 }
-            } else if (!placement.isOperative()) {
-                showToastNotification(getString(R.string.notification_error_placements_is_inactive), Toast.LENGTH_SHORT, true);
+
+            } else if (adIsLoading && !adIsLoaded) {
+                showToastNotification(getString(R.string.notification_add_is_loading), Toast.LENGTH_SHORT, false);
             } else {
-                showToastNotification(getString(R.string.notification_error_no_fill), Toast.LENGTH_SHORT, true);
+                showToastNotification(getString(R.string.notification_success_add_was_loaded), Toast.LENGTH_SHORT, false);
             }
         });
 
@@ -193,10 +198,18 @@ public class ShowPlacementActivity extends AbstractActivity {
         sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), Controller.getInstance().getVer()));
     }
 
-    private void showToastNotification(String message, int length, boolean error) {
-        Toast toast = Toast.makeText(this, message, length);
+    private void showToastNotification(@NonNull String message, int length, boolean error) {
+        if (toast != null) {
+            if (message.equals(this.message) && toast.getView().isShown()) {
+                return;
+            } else {
+                toast.cancel();
+            }
+        }
+        toast = Toast.makeText(this, message, length);
         toast.getView().setBackgroundResource(error ? R.drawable.bg_red_toast : R.drawable.bg_green_toast);
         toast.show();
+        this.message = message;
     }
 
     @Override

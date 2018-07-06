@@ -30,9 +30,11 @@
         </activity>
         <activity
             android:name=".base.activities.AddPlacementActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".base.activities.ShowPlacementActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
 
         <!-- display.io SDK required activities -->
