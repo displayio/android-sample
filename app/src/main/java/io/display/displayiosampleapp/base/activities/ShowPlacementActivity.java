@@ -104,14 +104,54 @@ public class ShowPlacementActivity extends AbstractActivity {
             if (placement.hasAd()) {
                 if (!adIsLoaded && !adIsLoading) {
                     try {
-                        progressBar.setVisibility(View.VISIBLE);
-                        Method loadAd = placement.getClass().getDeclaredMethod("loadAd");
-                        loadAd.setAccessible(true);
-                        loadAd.invoke(placement);
-                        adIsLoading = true;
+                        Class[] paramTypes = new Class[]{String.class, String.class, ServiceClient.ServiceResponseListener.class};
+                        ServiceClient client = new ServiceClient(Controller.getInstance());
+                        Method method = client.getClass().getDeclaredMethod("a", paramTypes);
+                        method.setAccessible(true);
+                        Object[] args = new Object[]{appId, placement.getId(), new ServiceClient.ServiceResponseListener() {
+                            public void onErrorResponse(String msg, JSONObject data) {
+                            }
+
+                            public void onSuccessResponse(JSONObject resp) {
+                                try {
+                                    if (placement != null) {
+                                        progressBar.setVisibility(View.VISIBLE);
+
+                                        Method method = placement.getClass().getDeclaredMethod("setup", JSONObject.class);
+                                        method.setAccessible(true);
+                                        method.invoke(placement, resp);
+
+                                        Method loadAd = placement.getClass().getDeclaredMethod("loadAd");
+                                        loadAd.setAccessible(true);
+                                        loadAd.invoke(placement);
+
+                                        adIsLoading = true;
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            public void onError(String error, JSONObject resp) {
+                            }
+
+                        }};
+
+                        method.invoke(client, args);
+
                     } catch (Throwable e) {
                         Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
                     }
+
+//                    try {
+//                        progressBar.setVisibility(View.VISIBLE);
+//                        Method loadAd = placement.getClass().getDeclaredMethod("loadAd");
+//                        loadAd.setAccessible(true);
+//                        loadAd.invoke(placement);
+//                        adIsLoading = true;
+//                    } catch (Throwable e) {
+//                        Log.e(getClass().getSimpleName(), e.getLocalizedMessage(), e);
+//                    }
                 } else if (adIsLoading && !adIsLoaded) {
                     showToastNotification(getString(R.string.notification_add_is_loading), Toast.LENGTH_SHORT, false);
                 } else {
@@ -157,5 +197,11 @@ public class ShowPlacementActivity extends AbstractActivity {
         Toast toast = Toast.makeText(this, message, length);
         toast.getView().setBackgroundResource(error ? R.drawable.bg_red_toast : R.drawable.bg_green_toast);
         toast.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Controller.getInstance().onDestroy();
+        super.onDestroy();
     }
 }
