@@ -127,8 +127,10 @@ public class ShowPlacementActivity extends AbstractActivity {
                                     method.setAccessible(true);
                                     method.invoke(placement, resp);
 
-                                    SharedPreferencesManager.getInstance(ShowPlacementActivity.this.getApplicationContext()).addNewPlacement(placement, appId);
-                                    setupTextViews();
+                                    if (!isPredefined) {
+                                        SharedPreferencesManager.getInstance(ShowPlacementActivity.this.getApplicationContext()).addNewPlacement(placement, appId);
+                                        setupTextViews();
+                                    }
 
                                     if (!placement.isOperative()) {
                                         progressBar.setVisibility(View.GONE);
