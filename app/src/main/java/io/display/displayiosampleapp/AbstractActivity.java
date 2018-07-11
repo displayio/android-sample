@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.display.displayiosampleapp.base.util.StaticValues;
@@ -132,7 +131,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
                     Controller.getInstance().showAd(this, placementId, adParams);
                     break;
             }
-        } catch (JSONException e) {
+        } catch (Throwable e) {
             Log.e(TAG, "Parsing data error", e);
             Controller.getInstance().getEventListener().onAdFailedToShow(placementId);
         }
