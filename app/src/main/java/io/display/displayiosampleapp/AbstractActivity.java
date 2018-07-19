@@ -19,6 +19,12 @@ public abstract class AbstractActivity extends AppCompatActivity {
     private final String TAG = getClass().getSimpleName();
     private final String APP_ID = "12345";
 
+    private final String KEY_ADS = "ads";
+    private final String KEY_AD = "ad";
+    private final String KEY_TYPE = "type";
+    private final String KEY_REW_NAME = "rewardName";
+    private final String KEY_REW_AMOUNT = "rewardAmount";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +120,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
         }
 
         try {
-            switch (((JSONObject) placement.getData().getJSONArray("ads").get(0)).getJSONObject("ad").getString("type")) {
+            switch (((JSONObject) placement.getData().getJSONArray(KEY_ADS).get(0)).getJSONObject(KEY_AD).getString(KEY_TYPE)) {
                 case Controller.AD_INFEED:
                     startActivity(new Intent(this, ListActivity.class)
                             .putExtra(StaticValues.PLACEMENT_ID, placementId));
@@ -126,8 +132,8 @@ public abstract class AbstractActivity extends AppCompatActivity {
                     break;
                 default:
                     JSONObject adParams = new JSONObject();
-                    adParams.put("rewardName", "credit")
-                            .put("rewardAmount", 15);
+                    adParams.put(KEY_REW_NAME, "credit")
+                            .put(KEY_REW_AMOUNT, 15);
                     Controller.getInstance().showAd(this, placementId, adParams);
                     break;
             }
