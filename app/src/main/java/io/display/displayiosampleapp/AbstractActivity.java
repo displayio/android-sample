@@ -113,6 +113,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
             Controller.getInstance().getEventListener().onAdFailedToShow(placementId);
             return;
         }
+
         if (!placement.hasAd()) {
             Log.e(TAG, "Can not show ad. Placement has no ad");
             Controller.getInstance().getEventListener().onNoAds(placementId);

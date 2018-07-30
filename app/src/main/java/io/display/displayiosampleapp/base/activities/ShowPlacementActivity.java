@@ -21,6 +21,7 @@ import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.base.util.SharedPreferencesManager;
 import io.display.displayiosampleapp.base.util.StaticValues;
 import io.display.sdk.Controller;
+import io.display.sdk.DioSdkException;
 import io.display.sdk.EventListener;
 import io.display.sdk.Placement;
 import io.display.sdk.ServiceClient;
@@ -64,8 +65,7 @@ public class ShowPlacementActivity extends AbstractActivity {
 
     private void setupAdsController() {
         Controller controller = Controller.getInstance();
-        String placementId = placement.getId();
-        controller.setNativeAdCaching(placementId, true);
+        controller.setNativeAdCaching(placement.getId(), true);
 
         try {
             Field field = controller.getClass().getDeclaredField("b");
@@ -78,7 +78,6 @@ public class ShowPlacementActivity extends AbstractActivity {
         }
 
         controller.setEventListener(new EventListener() {
-
             @Override
             public void onAdReady(String placementId) {
                 onAdReadyToShow(placementId);
@@ -116,6 +115,7 @@ public class ShowPlacementActivity extends AbstractActivity {
 
                         public void onErrorResponse(String msg, JSONObject data) {
                             Log.e(getClass().getSimpleName(), msg, new RuntimeException(data.toString()));
+                            showToastNotification(getString(R.string.notification_error_app_is_inactive), Toast.LENGTH_SHORT, true);
                         }
 
                         public void onSuccessResponse(JSONObject resp) {

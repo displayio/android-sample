@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
 
     private void setupController() {
         Controller controller = Controller.getInstance();
-        controller.init(this, null);
+        controller.init(this, null, false);
 
         try {
             Method method = controller.getClass().getDeclaredMethod("f");
