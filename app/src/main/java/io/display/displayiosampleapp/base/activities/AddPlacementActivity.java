@@ -23,7 +23,6 @@ import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.base.adapter.PlacementsAdapter;
 import io.display.displayiosampleapp.base.listeners.OnRecyclerViewItemClickListener;
 import io.display.displayiosampleapp.base.util.SharedPreferencesManager;
-import io.display.sdk.BuildConfig;
 import io.display.sdk.Controller;
 import io.display.sdk.EventListener;
 import io.display.sdk.Placement;

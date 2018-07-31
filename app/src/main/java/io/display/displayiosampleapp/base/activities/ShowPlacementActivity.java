@@ -21,7 +21,6 @@ import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.base.util.SharedPreferencesManager;
 import io.display.displayiosampleapp.base.util.StaticValues;
 import io.display.sdk.Controller;
-import io.display.sdk.DioSdkException;
 import io.display.sdk.EventListener;
 import io.display.sdk.Placement;
 import io.display.sdk.ServiceClient;

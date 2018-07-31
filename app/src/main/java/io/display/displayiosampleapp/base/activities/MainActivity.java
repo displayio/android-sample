@@ -1,7 +1,6 @@
 package io.display.displayiosampleapp.base.activities;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,11 +26,9 @@ import io.display.displayiosampleapp.base.adapter.PlacementsAdapter;
 import io.display.displayiosampleapp.base.listeners.OnRecyclerViewItemClickListener;
 import io.display.displayiosampleapp.base.util.SharedPreferencesManager;
 import io.display.displayiosampleapp.base.util.StaticValues;
-import io.display.sdk.BuildConfig;
 import io.display.sdk.Controller;
 import io.display.sdk.DioSdkException;
 import io.display.sdk.Placement;
-import io.display.sdk.ServiceClient;
 
 public class MainActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener {
 

@@ -3,7 +3,6 @@ package io.display.displayiosampleapp;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +26,6 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private String placementId;
     private Context context;
     private List<Integer> imagesIds;
-    private SparseArray<InfeedAdContainer> loadedAds;
-    private boolean displayed;
     private boolean isNativeAd;
 
     public ListAdapter(List<Integer> imagesIds, int[] adPosition, String placementId, boolean isNative) {
@@ -39,7 +36,6 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.imagesIds.add(position, null);
         }
         isNativeAd = isNative;
-        displayed = false;
     }
 
     @NonNull
@@ -86,10 +82,6 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else {
             ((ViewHolder) holder).itemImageView.setImageResource(imagesIds.get(holder.getAdapterPosition()));
         }
-    }
-
-    private void checkandAttachAdToRow(RecyclerView.ViewHolder holder, int position) {
-
     }
 
     @Override
