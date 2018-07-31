@@ -113,7 +113,7 @@ public class ShowPlacementActivity extends AbstractActivity {
                     Object[] args = new Object[]{appId, placement.getId(), new ServiceClient.ServiceResponseListener() {
 
                         public void onErrorResponse(String msg, JSONObject data) {
-                            Log.e(getClass().getSimpleName(), msg, new RuntimeException(data.toString()));
+                            Log.e(getClass().getSimpleName(), msg);
                             showToastNotification(getString(R.string.notification_error_app_is_inactive), Toast.LENGTH_SHORT, true);
                         }
 
