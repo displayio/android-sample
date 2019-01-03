@@ -65,7 +65,7 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
 
                 placements = new ArrayList<>();
                 for (Map.Entry<String, Placement> entry : adsController.placements.entrySet()) {
-                    placements.add(new PlacementWrapper(entry.getKey(), entry.getValue().getId(), entry.getValue().getName(), "[" + entry.getValue().getData().optString("type") + "}"));
+                    placements.add(new PlacementWrapper(appId, entry.getValue().getId(), entry.getValue().getName(), "[" + entry.getValue().getData().optString("type") + "}"));
                 }
 
                 addPlacementsAdapter.setPlacements(placements);
