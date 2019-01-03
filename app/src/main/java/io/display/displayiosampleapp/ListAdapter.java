@@ -3,39 +3,41 @@ package io.display.displayiosampleapp;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.display.sdk.BannerPlacement;
 import io.display.sdk.Controller;
-import io.display.sdk.ads.InfeedAdContainer;
-import io.display.sdk.ads.supers.NativeAd;
+import io.display.sdk.ads.BannerAdContainer;
+import io.display.sdk.exceptions.DioSdkException;
 
 public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int ADD_VIEW_TYPE = 1;
-    private static final int DEFAULT_VIEW_TYPE = 0;
+    private static final byte AD_VIEW_TYPE = 0;
+    private static final byte SIMPLE_VIEW_TYPE = 1;
+
+    private static final String TAG = "ListAdapter";
 
     private String placementId;
+    private String requestId;
     private Context context;
     private List<Integer> imagesIds;
-    private boolean isNativeAd;
 
-    public ListAdapter(List<Integer> imagesIds, int[] adPosition, String placementId, boolean isNative) {
+    public ListAdapter(List<Integer> imagesIds, int[] adPosition, String placementId, String requestId) {
         this.placementId = placementId;
+        this.requestId = requestId;
         this.imagesIds = new ArrayList<>();
         this.imagesIds.addAll(imagesIds);
         for (int position : adPosition) {
             this.imagesIds.add(position, null);
         }
-        isNativeAd = isNative;
     }
 
     @NonNull
@@ -43,44 +45,34 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext().getApplicationContext();
         switch (viewType) {
-            case ADD_VIEW_TYPE:
-                if (isNativeAd) {
-                    return new NativeAdViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_native_ad, parent, false));
-                } else {
-                    return new AdViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_ad, parent, false));
-                }
-
+            case AD_VIEW_TYPE:
+                return new AdViewHolder(BannerAdContainer.getAdView(context));
             default:
-                return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, parent, false));
+                return new ItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, parent, false));
         }
     }
 
     @Override
     public int getItemViewType(int position) {
         if (imagesIds.get(position) == null) {
-            return ADD_VIEW_TYPE;
+            return AD_VIEW_TYPE;
         } else {
-            return DEFAULT_VIEW_TYPE;
+            return SIMPLE_VIEW_TYPE;
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder.getItemViewType() == ADD_VIEW_TYPE) {
-            if (isNativeAd) {
-                NativeAd nativeAd = Controller.getInstance().getNativeAd(placementId);
-
-                NativeAdViewHolder nativeAddViewHolder = (NativeAdViewHolder) holder;
-                nativeAddViewHolder.appIcon.setImageBitmap(nativeAd.getIconBitmap(NativeAd.ICON_SIZE_200));
-
-                nativeAddViewHolder.appName.setText(nativeAd.getAppName());
-                nativeAddViewHolder.appDescription.setText(nativeAd.getDescription());
-
-                nativeAddViewHolder.ctaText.setText(nativeAd.getCallToAction());
-                nativeAddViewHolder.ctaFrame.setOnClickListener(view -> nativeAd.sendClick(context));
+        if (holder.getItemViewType() == AD_VIEW_TYPE && holder instanceof AdViewHolder) {
+            try {
+                BannerAdContainer bannerContainer = ((BannerPlacement) Controller.getInstance().getPlacement(placementId))
+                        .getBannerContainer(context, requestId);
+                bannerContainer.bindTo((RelativeLayout) holder.itemView);
+            } catch (DioSdkException e) {
+                Log.e(getClass().getSimpleName(), e.getLocalizedMessage());
             }
         } else {
-            ((ViewHolder) holder).itemImageView.setImageResource(imagesIds.get(holder.getAdapterPosition()));
+            ((ItemViewHolder) holder).itemImageView.setImageResource(imagesIds.get(holder.getAdapterPosition()));
         }
     }
 
@@ -89,59 +81,21 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return imagesIds.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ItemViewHolder extends RecyclerView.ViewHolder {
 
         ImageView itemImageView;
 
-        ViewHolder(View itemView) {
+        ItemViewHolder(View itemView) {
             super(itemView);
 
             itemImageView = itemView.findViewById(R.id.image_view_item);
         }
     }
 
-    @Override
-    public void onViewAttachedToWindow(@NonNull RecyclerView.ViewHolder holder) {
-        if (holder.getItemViewType() == ADD_VIEW_TYPE && !isNativeAd) {
-            InfeedAdContainer infeedAdContainer = Controller.getInstance().getInfeedAdContainer(context, this.placementId);
-            infeedAdContainer.bindTo((FrameLayout) ((AdViewHolder) holder).itemView);
-        }
-        super.onViewAttachedToWindow(holder);
-    }
-
-    @Override
-    public void onViewDetachedFromWindow(@NonNull RecyclerView.ViewHolder holder) {
-        if (holder.getItemViewType() == ADD_VIEW_TYPE && !isNativeAd) {
-            InfeedAdContainer infeedAdContainer = Controller.getInstance().getInfeedAdContainer(context, this.placementId);
-            infeedAdContainer.unbindFrom((FrameLayout) ((AdViewHolder) holder).itemView);
-        }
-
-        super.onViewDetachedFromWindow(holder);
-    }
-
     class AdViewHolder extends RecyclerView.ViewHolder {
 
         AdViewHolder(View itemView) {
             super(itemView);
-        }
-    }
-
-    class NativeAdViewHolder extends RecyclerView.ViewHolder {
-
-        ImageView appIcon;
-        TextView appName;
-        TextView appDescription;
-        RelativeLayout ctaFrame;
-        TextView ctaText;
-
-        NativeAdViewHolder(View itemView) {
-            super(itemView);
-
-            appIcon = itemView.findViewById(R.id.image_view_app_icon);
-            appName = itemView.findViewById(R.id.text_view_native_ad_app_name);
-            appDescription = itemView.findViewById(R.id.text_view_native_ad_app_description);
-            ctaFrame = itemView.findViewById(R.id.relative_layout_cta);
-            ctaText = itemView.findViewById(R.id.text_view_cta);
         }
     }
 }

@@ -28,7 +28,7 @@
             android:layout_toLeftOf="@id/linear_layout_placement_button_container"
             android:layout_toStartOf="@id/linear_layout_placement_button_container"
             android:padding="8dp"
-            android:text="display.io Interstitial"
+            tools:text="display.io Interstitial"
             android:textColor="@color/colorBlack"
             android:textSize="16sp"
             app:fontFamily="@font/montserrat_regular" />

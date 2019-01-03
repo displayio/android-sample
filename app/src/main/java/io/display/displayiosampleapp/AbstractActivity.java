@@ -5,31 +5,40 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-
-import org.json.JSONObject;
+import android.widget.Toast;
 
 import io.display.displayiosampleapp.base.util.StaticValues;
+import io.display.sdk.AdProvider;
+import io.display.sdk.AdRequest;
 import io.display.sdk.Controller;
-import io.display.sdk.EventListener;
 import io.display.sdk.Placement;
-import io.display.sdk.ads.supers.RewardedVideoAd;
+import io.display.sdk.ads.Ad;
+import io.display.sdk.exceptions.DioSdkException;
+import io.display.sdk.listeners.AdEventListener;
+import io.display.sdk.listeners.AdLoadListener;
+import io.display.sdk.listeners.AdRequestListener;
+import io.display.sdk.listeners.SdkInitListener;
 
 public abstract class AbstractActivity extends AppCompatActivity {
 
     private final String TAG = getClass().getSimpleName();
-    private final String APP_ID = "12345";
 
-    private final String KEY_ADS = "ads";
-    private final String KEY_AD = "ad";
-    private final String KEY_TYPE = "type";
-    private final String KEY_REW_NAME = "rewardName";
-    private final String KEY_REW_AMOUNT = "rewardAmount";
+    private String appId;
+    private String placementId;
+    private AdRequest adRequest;
+    private AdProvider adProvider;
+    private Ad ad;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Controller.getInstance().init(this, APP_ID, false);
-        Controller.getInstance().setEventListener(new EventListener() {
+
+        if (getIntent() != null) {
+            appId = getIntent().getStringExtra(StaticValues.APP_ID);
+            placementId = getIntent().getStringExtra(StaticValues.PLACEMENT_ID);
+        }
+
+        Controller.getInstance().init(this, appId, new SdkInitListener() {
             @Override
             public void onInit() {
                 Log.i(TAG, "Controller initialized");
@@ -38,63 +47,6 @@ public abstract class AbstractActivity extends AppCompatActivity {
             @Override
             public void onInitError(String msg) {
                 Log.e(TAG, msg);
-            }
-
-            @Override
-            public void onAdShown(String placementId) {
-                Log.i(TAG, "Ad was shown for placement " + placementId);
-            }
-
-            @Override
-            public void onAdFailedToShow(String placementId) {
-                Log.e(TAG, "Ad is failed to show for placement " + placementId);
-            }
-
-            @Override
-            public void onNoAds(String placementId) {
-                Log.e(TAG, "No ads for placement " + placementId);
-            }
-
-            @Override
-            public void onAdCompleted(String placementId) {
-                Log.i(TAG, "Ad is completed for placement " + placementId);
-            }
-
-            @Override
-            public void onAdClose(String placementId) {
-                Log.i(TAG, "Ad is closed for placement " + placementId);
-            }
-
-            @Override
-            public void onAdClick(String placementId) {
-                Log.i(TAG, "Ad is clicked for placement " + placementId);
-            }
-
-            @Override
-            public void onAdReady(String placementId) {
-                Log.i(TAG, "Ad is ready for placement " + placementId);
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(String placementId, RewardedVideoAd.Reward reward) {
-                Log.i(TAG, "Rewarded video is completed for placement " + placementId);
-            }
-
-            @Override
-            public void inactivate() {
-                Log.i(TAG, "Inactivating event listener");
-                super.inactivate();
-            }
-
-            @Override
-            public void activate() {
-                Log.i(TAG, "Activating event listener");
-                super.activate();
-            }
-
-            @Override
-            public boolean isActive() {
-                return super.isActive();
             }
         });
     }
@@ -105,42 +57,113 @@ public abstract class AbstractActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void showAd(String placementId) {
-        Placement placement = Controller.getInstance().placements.get(placementId);
-
-        if (placement == null) {
-            Log.e(TAG, "Can not show ad. Placement is null");
-            Controller.getInstance().getEventListener().onAdFailedToShow(placementId);
-            return;
-        }
-
-        if (!placement.hasAd()) {
-            Log.e(TAG, "Can not show ad. Placement has no ad");
-            Controller.getInstance().getEventListener().onNoAds(placementId);
-            return;
-        }
-
+    public void requestAd() {
+        Placement placement;
         try {
-            switch (((JSONObject) placement.getData().getJSONArray(KEY_ADS).get(0)).getJSONObject(KEY_AD).getString(KEY_TYPE)) {
-                case Controller.AD_INFEED:
-                    startActivity(new Intent(this, ListActivity.class)
-                            .putExtra(StaticValues.PLACEMENT_ID, placementId));
-                    break;
-                case Controller.AD_NATIVE:
-                    startActivity(new Intent(this, ListActivity.class)
-                            .putExtra(StaticValues.PLACEMENT_ID, placementId)
-                            .putExtra(StaticValues.IS_NATIVE_ADD, true));
-                    break;
-                default:
-                    JSONObject adParams = new JSONObject();
-                    adParams.put(KEY_REW_NAME, "credit")
-                            .put(KEY_REW_AMOUNT, 15);
-                    Controller.getInstance().showAd(this, placementId, adParams);
-                    break;
-            }
-        } catch (Throwable e) {
-            Log.e(TAG, "Parsing data error", e);
-            Controller.getInstance().getEventListener().onAdFailedToShow(placementId);
+            placement = Controller.getInstance().getPlacement(placementId);
+        } catch (DioSdkException e) {
+            Log.e(getClass().getSimpleName(), e.getLocalizedMessage());
+            return;
         }
+
+        if (placement.hasPendingAdRequests()) {
+            try {
+                adRequest = placement.getLastAdRequest();
+            } catch (DioSdkException e) {
+                adRequest = placement.newAdRequest();
+            }
+        } else {
+            adRequest = placement.newAdRequest();
+        }
+
+        adRequest.setAdRequestListener(new AdRequestListener() {
+            @Override
+            public void onAdReceived(AdProvider returnedAdProvider) {
+
+                adProvider = returnedAdProvider;
+                adProvider.setAdLoadListener(new AdLoadListener() {
+                    @Override
+                    public void onLoaded(Ad adUnit) {
+                        ad = adUnit;
+                        adLoaded(placementId);
+                    }
+
+                    @Override
+                    public void onFailedToLoad() {
+                        adFailedToLoad();
+                    }
+                });
+
+                loadAd();
+            }
+
+            @Override
+            public void onNoAds() {
+                onNoFill();
+            }
+
+        });
+
+        adRequest.requestAd();
+    }
+
+    public void loadAd() {
+        try {
+            adProvider.loadAd();
+        } catch (DioSdkException e) {
+            Toast.makeText(this, "Loading Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void showAd() {
+        if (ad != null) {
+            if (ad.isInterstitial()) {
+                ad.setEventListener(new AdEventListener() {
+                    @Override
+                    public void onShown(Ad Ad) {
+                    }
+
+                    @Override
+                    public void onFailedToShow(Ad ad) {
+                    }
+
+                    @Override
+                    public void onClicked(Ad ad) {
+                    }
+
+                    @Override
+                    public void onClosed(Ad ad) {
+                    }
+
+                    @Override
+                    public void onAdCompleted(Ad ad) {
+                    }
+                });
+
+                ad.showAd(this);
+            } else {
+                Intent intent = new Intent(this, ListActivity.class);
+                intent.putExtra("placementId", placementId);
+                intent.putExtra("requestId", adRequest.getId());
+                startActivity(intent);
+            }
+        }
+    }
+
+    public void adLoaded(String placementId) {
+    }
+
+    public void adFailedToLoad() {
+    }
+
+    public void onNoFill() {
+    }
+
+    public void adClosed() {
+
+    }
+
+    public void adCompleted() {
+
     }
 }

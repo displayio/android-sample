@@ -14,7 +14,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
@@ -22,17 +21,18 @@ import java.util.Map;
 import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.base.adapter.PlacementsAdapter;
 import io.display.displayiosampleapp.base.listeners.OnRecyclerViewItemClickListener;
+import io.display.displayiosampleapp.base.util.PlacementWrapper;
 import io.display.displayiosampleapp.base.util.SharedPreferencesManager;
 import io.display.sdk.Controller;
-import io.display.sdk.EventListener;
 import io.display.sdk.Placement;
+import io.display.sdk.listeners.SdkInitListener;
 
 public class AddPlacementActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener {
 
     private EditText appIdEditText;
     private ProgressBar addPlacementsProgressBar;
     private PlacementsAdapter addPlacementsAdapter;
-    private ArrayList<Placement> placements;
+    private ArrayList<PlacementWrapper> placements;
     private String appId;
 
     private Controller adsController;
@@ -56,7 +56,7 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
 
     private void setupAdsController() {
         adsController = Controller.getInstance();
-        adsController.setEventListener(new EventListener() {
+        adsController.setSdkInitListener(new SdkInitListener() {
             @Override
             public void onInit() {
                 if (adsController.placements.isEmpty()) {
@@ -65,7 +65,7 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
 
                 placements = new ArrayList<>();
                 for (Map.Entry<String, Placement> entry : adsController.placements.entrySet()) {
-                    placements.add(entry.getValue());
+                    placements.add(new PlacementWrapper(entry.getKey(), entry.getValue().getId(), entry.getValue().getName(), "[" + entry.getValue().getData().optString("type") + "}"));
                 }
 
                 addPlacementsAdapter.setPlacements(placements);
@@ -74,7 +74,7 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
             }
 
             @Override
-            public void onInitError(String msg) {
+            public void onInitError(String s) {
                 addPlacementsProgressBar.setVisibility(View.GONE);
                 showToastNotification(getString(R.string.notification_error_no_app_for_the_id), Toast.LENGTH_SHORT, true);
             }
@@ -104,7 +104,7 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
         TextView getPlacementsTextView = findViewById(R.id.text_view_get_placement);
         getPlacementsTextView.setOnClickListener(view -> {
             appId = appIdEditText.getText().toString();
-            refreshController(this, appId);
+            initController(this, appId);
             addPlacementsAdapter.setPlacements(new ArrayList<>());
             addPlacementsAdapter.notifyDataSetChanged();
             addPlacementsProgressBar.setVisibility(View.VISIBLE);
@@ -121,23 +121,15 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
         sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), Controller.getInstance().getVer()));
     }
 
-    private void refreshController(Context context, String appId) {
+    private void initController(Context context, String appId) {
         try {
-            Class[] paramTypes = new Class[]{Context.class, String.class, boolean.class};
+            Class[] paramTypes = new Class[]{Context.class, String.class};
             Method a = adsController.getClass().getDeclaredMethod("a", paramTypes);
             a.setAccessible(true);
-            Object[] args = new Object[]{context, appId, false};
+            Object[] args = new Object[]{context, appId};
             a.invoke(adsController, args);
-
-            Method f = adsController.getClass().getDeclaredMethod("f");
-            f.setAccessible(true);
-            f.invoke(adsController);
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             Log.e(TAG, e.getLocalizedMessage(), e);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
         }
     }
 
@@ -156,7 +148,7 @@ public class AddPlacementActivity extends AppCompatActivity implements OnRecycle
 
     @Override
     public void onItemClick(int position, int section) {
-        SharedPreferencesManager.getInstance(this.getApplicationContext()).addNewPlacement(placements.get(position), appId);
+        SharedPreferencesManager.getInstance(this.getApplicationContext()).addNewPlacement(placements.get(position));
         showToastNotification(getString(R.string.notification_success_placement_was_loaded), Toast.LENGTH_LONG, false);
         finish();
     }

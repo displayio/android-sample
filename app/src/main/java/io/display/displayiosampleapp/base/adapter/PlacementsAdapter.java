@@ -9,21 +9,17 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.base.listeners.OnRecyclerViewItemClickListener;
-import io.display.displayiosampleapp.base.util.StaticValues;
-import io.display.sdk.Placement;
+import io.display.displayiosampleapp.base.util.PlacementWrapper;
 
 public class PlacementsAdapter extends RecyclerView.Adapter<PlacementsAdapter.PlacementsViewHolder> {
 
     private OnRecyclerViewItemClickListener onRecyclerViewItemClickListener;
-    private List<Placement> placements = new ArrayList<>();
+    private List<PlacementWrapper> placements = new ArrayList<>();
     private boolean removable;
 
     public PlacementsAdapter(OnRecyclerViewItemClickListener onRecyclerViewItemClickListener, boolean removable) {
@@ -31,7 +27,7 @@ public class PlacementsAdapter extends RecyclerView.Adapter<PlacementsAdapter.Pl
         this.removable = removable;
     }
 
-    public void setPlacements(@NonNull List<Placement> placements) {
+    public void setPlacements(@NonNull List<PlacementWrapper> placements) {
         this.placements = placements;
     }
 
@@ -43,7 +39,7 @@ public class PlacementsAdapter extends RecyclerView.Adapter<PlacementsAdapter.Pl
 
     @Override
     public void onBindViewHolder(@NonNull final PlacementsViewHolder holder, int position) {
-        Placement placementModel = placements.get(holder.getAdapterPosition());
+        PlacementWrapper placementModel = placements.get(holder.getAdapterPosition());
         holder.bindData(placementModel);
     }
 
@@ -68,13 +64,9 @@ public class PlacementsAdapter extends RecyclerView.Adapter<PlacementsAdapter.Pl
             removeImageView = itemView.findViewById(R.id.image_view_remove);
         }
 
-        void bindData(Placement placement) {
-            placementLabelTextView.setText(placement.getName());
-            try {
-                placementNameTextView.setText(StaticValues.AD_TYPES.get(((JSONObject) placement.getData().getJSONArray("ads").get(0)).getJSONObject("ad").getString("type")));
-            } catch (JSONException e) {
-                placementNameTextView.setText(itemView.getContext().getString(R.string.notification_error_no_fill));
-            }
+        void bindData(PlacementWrapper placementWrapper) {
+            placementLabelTextView.setText(placementWrapper.getName());
+            placementNameTextView.setText(placementWrapper.getType());
             removeImageView.setVisibility(removable ? View.VISIBLE : View.GONE);
             itemContainer.setOnClickListener(view -> onRecyclerViewItemClickListener.onItemClick(getAdapterPosition(), removable ? 1 : 0));
             removeImageView.setOnClickListener(view -> onRecyclerViewItemClickListener.onItemButtonClicked(getAdapterPosition()));

@@ -10,35 +10,24 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import io.display.displayiosampleapp.R;
 import io.display.displayiosampleapp.base.adapter.PlacementsAdapter;
 import io.display.displayiosampleapp.base.listeners.OnRecyclerViewItemClickListener;
+import io.display.displayiosampleapp.base.util.PlacementWrapper;
 import io.display.displayiosampleapp.base.util.SharedPreferencesManager;
 import io.display.displayiosampleapp.base.util.StaticValues;
 import io.display.sdk.Controller;
-import io.display.sdk.DioSdkException;
-import io.display.sdk.Placement;
 
 public class MainActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener {
 
     private PlacementsAdapter predefinedPlacementsAdapter;
     private PlacementsAdapter userDefinedPlacementsAdapter;
 
-    private List<Placement> predefinedPlacements = new ArrayList<>();
-    private List<Placement> userDefinedPlacements = new ArrayList<>();
-
-    private Map<String, String> appIds = new HashMap<>();
+    private List<PlacementWrapper> predefinedPlacements = new ArrayList<>();
+    private List<PlacementWrapper> userDefinedPlacements = new ArrayList<>();
 
     private long backPressedTimeOut = 0;
 
@@ -47,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setupController();
         setupSdkVersion();
         setupPlacementsList();
         setupAddPlacementTextView();
@@ -66,21 +54,6 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         getPlacements(true);
         userDefinedPlacementsAdapter.setPlacements(userDefinedPlacements);
         userDefinedPlacementsAdapter.notifyDataSetChanged();
-
-        parseAppIds();
-    }
-
-    private void setupController() {
-        Controller controller = Controller.getInstance();
-        controller.init(this, null, false);
-
-        try {
-            Method method = controller.getClass().getDeclaredMethod("f");
-            method.setAccessible(true);
-            method.invoke(controller);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
     }
 
     private void setupSdkVersion() {
@@ -115,9 +88,9 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
 
     private void getPlacements(boolean removable) {
         if (removable) {
-            userDefinedPlacements = parsePlacements(SharedPreferencesManager.getInstance(this.getApplicationContext()).getUserDefinedPlacements());
+            userDefinedPlacements = SharedPreferencesManager.getInstance(this).getUserDefinedPlacements();
         } else {
-            predefinedPlacements = parsePlacements(StaticValues.PREDEFINED_PLACEMENTS);
+            predefinedPlacements = StaticValues.PREDEFINED_PLACEMENTS;
         }
     }
 
@@ -136,57 +109,10 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
             return;
         }
 
-        SharedPreferencesManager.getInstance(this.getApplicationContext()).removePlacement(userDefinedPlacements.remove(position));
+        SharedPreferencesManager.getInstance(this.getApplicationContext()).removePlacement(position);
+        userDefinedPlacements.remove(position);
         userDefinedPlacementsAdapter.setPlacements(userDefinedPlacements);
         userDefinedPlacementsAdapter.notifyItemRemoved(position);
-    }
-
-    private void parseAppIds() {
-        try {
-            JSONObject appIdsJson = new JSONObject(SharedPreferencesManager.getInstance(this.getApplicationContext()).getUserDefinedPlacementsAppIds());
-            Iterator keys = appIdsJson.keys();
-
-            while (keys.hasNext()) {
-                String key = keys.next().toString();
-                appIds.put(key, appIdsJson.getString(key));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private List<Placement> parsePlacements(String placementsString) {
-        List<Placement> placements = new ArrayList<>();
-        try {
-            Class paramType = JSONObject.class;
-            JSONObject placementsJson = new JSONObject(placementsString);
-            Iterator keys = placementsJson.keys();
-
-            while (keys.hasNext()) {
-                String placementId = (String) keys.next();
-
-                JSONObject plcData = placementsJson.getJSONObject(placementId);
-                Placement placement = new Placement(placementId, false);
-
-                Method setup = placement.getClass().getDeclaredMethod("setup", paramType);
-                setup.setAccessible(true);
-                Object[] args = new Object[]{plcData};
-                setup.invoke(placement, args);
-
-                placements.add(placement);
-                Controller.getInstance().placements.put(placementId, placement);
-            }
-
-        } catch (DioSdkException | JSONException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return placements;
     }
 
     @Override
@@ -207,10 +133,12 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
 
     @Override
     public void onItemClick(int position, int section) {
-        String placementId = section == 0 ? predefinedPlacements.get(position).getId() : userDefinedPlacements.get(position).getId();
-        String appId = appIds.get(placementId) != null ? appIds.get(placementId) : StaticValues.PREDEFINED_PLACEMENTS_APP_ID;
+        PlacementWrapper placementWrapper = section == 0 ? predefinedPlacements.get(position) : userDefinedPlacements.get(position);
+        String placementId = placementWrapper.getId();
+        String appId = placementWrapper.getAppId();
         startActivity(new Intent(this, ShowPlacementActivity.class)
                 .putExtra(StaticValues.IS_PREDEFINED, section == 0)
+                .putExtra(StaticValues.POSITION, position)
                 .putExtra(StaticValues.APP_ID, appId)
                 .putExtra(StaticValues.PLACEMENT_ID, placementId));
     }

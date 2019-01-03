@@ -34,4 +34,7 @@
     <string name="dialog_message_remove_placement">Are you sure you want to remove \"%s\" placement?</string>
     <string name="text_yes">Yes</string>
     <string name="text_no">No</string>
+    <string name="notification_error_ad_failed_to_load">Ad failed to load</string>
+    <string name="notification_error_init_error">Init error.</string>
+    <string name="notification_error_placement_is_undefined">Placement is undefined</string>
 </resources>
