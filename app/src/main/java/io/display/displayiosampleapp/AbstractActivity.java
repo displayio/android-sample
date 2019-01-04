@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 import io.display.displayiosampleapp.base.util.StaticValues;
 import io.display.sdk.AdProvider;
@@ -37,7 +36,15 @@ public abstract class AbstractActivity extends AppCompatActivity {
             appId = getIntent().getStringExtra(StaticValues.APP_ID);
             placementId = getIntent().getStringExtra(StaticValues.PLACEMENT_ID);
         }
+    }
 
+    @Override
+    protected void onDestroy() {
+        Controller.getInstance().onDestroy();
+        super.onDestroy();
+    }
+
+    public void initAdsController() {
         Controller.getInstance().init(this, appId, new SdkInitListener() {
             @Override
             public void onInit() {
@@ -49,12 +56,6 @@ public abstract class AbstractActivity extends AppCompatActivity {
                 Log.e(TAG, msg);
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        Controller.getInstance().onDestroy();
-        super.onDestroy();
     }
 
     public void requestAd() {
@@ -99,7 +100,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
 
             @Override
             public void onNoAds() {
-                onNoFill();
+                noFill();
             }
 
         });
@@ -111,7 +112,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
         try {
             adProvider.loadAd();
         } catch (DioSdkException e) {
-            Toast.makeText(this, "Loading Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Log.e(getClass().getSimpleName(), "Loading Exception: " + e.getLocalizedMessage());
         }
     }
 
@@ -121,22 +122,27 @@ public abstract class AbstractActivity extends AppCompatActivity {
                 ad.setEventListener(new AdEventListener() {
                     @Override
                     public void onShown(Ad Ad) {
+                        //
                     }
 
                     @Override
                     public void onFailedToShow(Ad ad) {
+                        //
                     }
 
                     @Override
                     public void onClicked(Ad ad) {
+                        //
                     }
 
                     @Override
                     public void onClosed(Ad ad) {
+                        //
                     }
 
                     @Override
                     public void onAdCompleted(Ad ad) {
+                        //
                     }
                 });
 
@@ -151,19 +157,14 @@ public abstract class AbstractActivity extends AppCompatActivity {
     }
 
     public void adLoaded(String placementId) {
+        //
     }
 
     public void adFailedToLoad() {
+        //
     }
 
-    public void onNoFill() {
-    }
-
-    public void adClosed() {
-
-    }
-
-    public void adCompleted() {
-
+    public void noFill() {
+        //
     }
 }

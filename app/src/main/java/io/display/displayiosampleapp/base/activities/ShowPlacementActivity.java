@@ -70,6 +70,8 @@ public class ShowPlacementActivity extends AbstractActivity {
             @Override
             public void onInitError(String s) {
                 progressBar.setVisibility(View.GONE);
+                adIsLoading = false;
+                adIsLoaded = false;
                 showToastNotification(getString(R.string.notification_error_init_error), Toast.LENGTH_SHORT, true);
             }
         });
@@ -113,7 +115,10 @@ public class ShowPlacementActivity extends AbstractActivity {
 
         showAdTextView = findViewById(R.id.text_view_show_ad);
         showAdTextViewContainer = findViewById(R.id.frame_layout_show_add);
-        showAdTextView.setOnClickListener(view -> showAd());
+        showAdTextView.setOnClickListener(view -> {
+            showAd();
+            adShown();
+        });
         showAdTextView.setEnabled(false);
     }
 
@@ -138,7 +143,7 @@ public class ShowPlacementActivity extends AbstractActivity {
     }
 
     @Override
-    public void onNoFill() {
+    public void noFill() {
         adIsLoading = false;
         adIsLoaded = false;
         progressBar.setVisibility(View.GONE);
@@ -157,6 +162,13 @@ public class ShowPlacementActivity extends AbstractActivity {
     private void setupSdkVersion() {
         TextView sdkVersionTextView = findViewById(R.id.text_view_show_placement_sdk_version);
         sdkVersionTextView.setText(String.format(getString(R.string.placeholder_sdk_version), Controller.getInstance().getVer()));
+    }
+
+    private void adShown() {
+        adIsLoading = false;
+        adIsLoaded = false;
+        showAdTextView.setEnabled(false);
+        showAdTextViewContainer.setBackgroundResource(R.color.colorDarkGrey);
     }
 
     private void showToastNotification(@NonNull String message, int length, boolean error) {
